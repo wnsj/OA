@@ -14,5 +14,17 @@ import java.util.List;
 public interface AskLeaveService extends IService<AskLeaveBean> {
 
     //查询请假
-    public List<AskLeaveBean> queryAskLeave(AskLeaveBean askLeaveBean);
+    public List<AskLeaveBean> queryAskLeave(AskLeaveBean askLeaveBean) throws Exception;
+
+    //添加请假
+    public void addAskLeave(AskLeaveBean askLeaveBean) throws Exception;
+
+    //修改请假
+    public void updateAskLeave(AskLeaveBean askLeaveBean) throws Exception;
+
+    //申请请假
+    public void applyLeave(AskLeaveBean askLeaveBean) throws Exception;
+
+    //取消，审核申请
+    public void operationLeave(AskLeaveBean askLeaveBean) throws Exception;
 }

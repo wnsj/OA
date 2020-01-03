@@ -18,4 +18,7 @@ public interface EmployeeDao extends BaseMapper<EmployeeBean> {
 
     //添加员工
     public int addEmployee(EmployeeBean employeeBean);
+
+    //修改员工
+    public int updateEmployee(EmployeeBean employeeBean);
 }

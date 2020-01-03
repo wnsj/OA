@@ -2,13 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jiubo.oa.dao.EmployeeDao">
 
-    <!--    查询员工-->
+    <!--    查询员工
+
+    -->
     <select id="queryEmployee" resultType="com.jiubo.oa.bean.EmployeeBean">
         SELECT E.EMP_ID, E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY, E.POLITICAL, E.REG_RESIDENCE,
         E.NATIVE_PLACE, E.PHONE, E.PERMANENT_ADDRESS, E.ADDRESS, E.EMERGENCY_CONTACT,
         E.EMERGENCY_PHONE, E.CONTRACT_ATTRIBUTE, E.CONTRACT_PERIOD, E.SUBSCRIPT_1,
-        E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.ACC_PWD, E.DEPT_ID,
+        E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.DEPT_ID,
         E.POS_ID, E.ENTRY_DATE, E.FORMAL_DATE, E.LEAVEL_DATE, E.STATE, E.OPEN_ID,D.DEPT_NAME,P.POS_NAME
+        <if test="showPwd == 1">
+            , E.ACC_PWD
+        </if>
         FROM EMPLOYEE E
         LEFT JOIN DEPARTMENT D
         ON E.DEPT_ID = D.DEPT_ID
@@ -30,6 +35,9 @@
         <if test="accName != null and accName != ''">
             AND ACC_NAME = #{accName}
         </if>
+        <if test="openId != null and openId != ''">
+            AND OPEN_ID = #{openId}
+        </if>
         <if test="excludeEmp != null and excludeEmp.length > 0">
             AND EMP_ID NOT IN
             <foreach collection="excludeEmp" item="item" open="(" separator="," close=")">
@@ -37,4 +45,97 @@
             </foreach>
         </if>
     </select>
+
+    <!--    修改员工-->
+    <update id="updateEmployee">
+        UPDATE EMPLOYEE
+        SET
+        <trim suffixOverrides=",">
+            <if test="empName != null and empName != ''">
+                EMP_NAME = #{empName} ,
+            </if>
+            <if test="sex != null and sex != ''">
+                SEX = #{sex},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                IDCARD = #{idCard},
+            </if>
+            <if test="birthday != null and birthday != ''">
+                BIRTHDAY = #{birthday},
+            </if>
+            <if test="nationality != null and nationality != ''">
+                NATIONALITY = #{nationality},
+            </if>
+            <if test="political != null and political != ''">
+                POLITICAL = #{political},
+            </if>
+            <if test="regResidence != null and regResidence != ''">
+                REG_RESIDENCE = #{regResidence},
+            </if>
+            <if test="nativePlace != null and nativePlace != ''">
+                NATIVE_PLACE = #{nativePlace},
+            </if>
+            <if test="phone != null and phone != ''">
+                PHONE = #{phone},
+            </if>
+            <if test="permanentAddress != null and permanentAddress != ''">
+                PERMANENT_ADDRESS = #{permanentAddress},
+            </if>
+            <if test="address != null and address != ''">
+                ADDRESS = #{address},
+            </if>
+            <if test="emergencyContact != null and emergencyContact != ''">
+                EMERGENCY_CONTACT = #{emergencyContact},
+            </if>
+            <if test="emergencyPhone != null and emergencyPhone != ''">
+                EMERGENCY_PHONE = #{emergencyPhone},
+            </if>
+            <if test="contractAttribute != null and contractAttribute != ''">
+                CONTRACT_ATTRIBUTE = #{contractAttribute},
+            </if>
+            <if test="contractPeriod != null and contractPeriod != ''">
+                CONTRACT_PERIOD = #{contractPeriod},
+            </if>
+            <if test="subscript1 != null and subscript1 != ''">
+                SUBSCRIPT_1 = #{subscript1},
+            </if>
+            <if test="subscript2 != null and subscript2 != ''">
+                SUBSCRIPT_2 = #{subscript2},
+            </if>
+            <if test="subscript3 != null and subscript3 != ''">
+                SUBSCRIPT_3 = #{subscript3},
+            </if>
+            <if test="subscript4 != null and subscript4 != ''">
+                SUBSCRIPT_4 = #{subscript4},
+            </if>
+            <if test="accName != null and accName != ''">
+                ACC_NAME = #{accName},
+            </if>
+            <if test="accPwd != null and accPwd != ''">
+                ACC_PWD = #{accPwd},
+            </if>
+            <if test="deptId != null and deptId != ''">
+                DEPT_ID = #{deptId},
+            </if>
+            <if test="posId != null and posId != ''">
+                POS_ID = #{posId},
+            </if>
+            <if test="entryDate != null and entryDate != ''">
+                ENTRY_DATE = #{entryDate},
+            </if>
+            <if test="formalDate != null and formalDate != ''">
+                FORMAL_DATE = #{formalDate},
+            </if>
+            <if test="leavelDate != null and leavelDate != ''">
+                LEAVEL_DATE = #{leavelDate},
+            </if>
+            <if test="state != null and state != ''">
+                STATE = #{state},
+            </if>
+            <if test="openId != null and openId != ''">
+                OPEN_ID = #{openId},
+            </if>
+        </trim>
+        WHERE EMP_ID = #{empId}
+    </update>
 </mapper>

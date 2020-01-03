@@ -15,4 +15,10 @@ public interface AskLeaveDao extends BaseMapper<AskLeaveBean> {
 
     //查询请假
     public List<AskLeaveBean> queryAskLeave(AskLeaveBean askLeaveBean);
+
+    //添加请假
+    public int addAskLeave(AskLeaveBean askLeaveBean);
+
+    //修改请假
+    public int updateAskLeave(AskLeaveBean askLeaveBean);
 }

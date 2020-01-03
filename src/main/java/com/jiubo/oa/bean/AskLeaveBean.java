@@ -25,17 +25,29 @@ public class AskLeaveBean implements Serializable {
     //请假类型
     private String ltId;
 
+    private String ltName;
+
     //申请人
     private String empId;
+
+    private String empName;
 
     //申请时间
     private String createDate;
 
+    private String createBegDate;
+
+    private String createEndDate;
+
     //开始时间
     private String begDate;
 
+    private String qBegDate;
+
     //结束时间
     private String endDate;
+
+    private String qEndDate;
 
     //说明
     private String remark;

@@ -2,7 +2,114 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jiubo.oa.dao.AskLeaveDao">
 
+    <!--    查询请假-->
     <select id="queryAskLeave" resultType="com.jiubo.oa.bean.AskLeaveBean">
-
+        SELECT A.AL_ID, A.LT_ID, A.EMP_ID, A.CREATE_DATE, A.BEG_DATE, A.END_DATE, A.REMARK, A.BILL, A.STATE,
+        A.EXAMINER, A.EXAMINER_ADV, A.EXAMINER_DATE, A.AUDITOR, A.AUDITOR_ADV, A.AUDITOR_DATE, A.APPROVER,
+        A.APPROVER_ADV, A.APPROVER_DATE,E.EMP_NAME,EM.EMP_NAME EXAMINER_NAME,EMP.EMP_NAME AUDITOR_NAME,EMPL.EMP_NAME
+        APPROVER_NAME,LT.LT_NAME
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = A.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = A.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = A.APPROVER
+        LEFT JOIN LEAVE_TYPE LT
+        ON LT.LT_ID = A.LT_ID
+        WHERE 1 = 1
+        <if test="empId != null and empId != ''">
+            AND (
+            A.EMP_ID = #{empId}
+            OR A.EXAMINER = #{empId}
+            OR A.AUDITOR = #{empId}
+            OR A.APPROVER = #{empId}
+            )
+        </if>
+        <if test="state != null and state != ''">
+            AND A.STATE = #{state}
+        </if>
+        <if test="createBegDate != null and createBegDate != '' and createEndDate != null and createEndDate != ''">
+            AND A.CREATE_DATE >= #{createBegDate}
+            AND A.CREATE_DATE &lt; #{createEndDate}
+        </if>
+        <if test="qBegDate != null and qBegDate != '' and qEndDate != null and qEndDate != ''">
+            AND A.BEG_DATE >= #{qBegDate}
+            AND A.END_DATE &lt; #{qEndDate}
+        </if>
     </select>
+
+    <!--    添加请假-->
+    <insert id="addAskLeave">
+        INSERT INTO ASK_LEAVE (LT_ID, EMP_ID, CREATE_DATE, BEG_DATE, END_DATE,
+                               REMARK, Bill, STATE, EXAMINER, EXAMINER_ADV,
+                               EXAMINER_DATE, AUDITOR, AUDITOR_ADV, AUDITOR_DATE, APPROVER,
+                               APPROVER_ADV, APPROVER_DATE)
+        VALUES (#{ltId}, #{empId}, #{createDate}, #{begDate}, #{endDate},
+                #{remark}, #{bill}, #{state}, #{examiner}, #{examinerAdv},
+                #{examinerDate}, #{auditor}, #{auditorAdv}, #{auditorDate}, #{approver},
+                #{approverAdv}, #{approverDate})
+    </insert>
+
+    <!--    修改请假-->
+    <update id="updateAskLeave">
+        UPDATE ASK_LEAVE
+        SET
+        <trim suffixOverrides=",">
+            <if test="ltId != null and ltId != ''">
+                ,LT_ID = #{ltId}
+            </if>
+            <if test="empId != null and empId != ''">
+                ,EMP_ID = #{empId}
+            </if>
+            <if test="createDate != null and createDate != ''">
+                ,CREATE_DATE = #{createDate}
+            </if>
+            <if test="begDate != null and begDate != ''">
+                ,BEG_DATE = #{begDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                ,END_DATE = #{endDate}
+            </if>
+            <if test="remark != null and remark != ''">
+                ,REMARK = #{remark}
+            </if>
+            <if test="bill != null and bill != ''">
+                ,Bill = #{bill}
+            </if>
+            <if test="state != null and state != ''">
+                ,STATE = #{state}
+            </if>
+            <if test="examiner != null and examiner != ''">
+                ,EXAMINER = #{examiner}
+            </if>
+            <if test="examinerAdv != null and examinerAdv != ''">
+                ,EXAMINER_ADV = #{examinerAdv}
+            </if>
+            <if test="examinerDate != null and examinerDate != ''">
+                ,EXAMINER_DATE = #{examinerDate}
+            </if>
+            <if test="auditor != null and auditor != ''">
+                ,AUDITOR = #{auditor}
+            </if>
+            <if test="auditorAdv != null and auditorAdv != ''">
+                ,AUDITOR_ADV = #{auditorAdv}
+            </if>
+            <if test="auditorDate != null and auditorDate != ''">
+                ,AUDITOR_DATE = #{auditorDate}
+            </if>
+            <if test="approver != null and approver != ''">
+                ,APPROVER = #{approver}
+            </if>
+            <if test="approverAdv != null and approverAdv != ''">
+                ,APPROVER_ADV = #{approverAdv}
+            </if>
+            <if test="approverDate != null and approverDate != ''">
+                ,APPROVER_DATE = #{approverDate}
+            </if>
+        </trim>
+        WHERE AL_ID = #{alId}
+    </update>
 </mapper>

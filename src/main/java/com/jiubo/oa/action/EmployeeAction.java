@@ -27,7 +27,7 @@ public class EmployeeAction {
 
     //查询员工
     @PostMapping(value = "/queryEmployee")
-    public JSONObject queryEmployee(@RequestBody String params)throws Exception{
+    public JSONObject queryEmployee(@RequestBody String params) throws Exception {
         if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
@@ -36,4 +36,30 @@ public class EmployeeAction {
         jsonObject.put(Constant.Result.RETDATA, employeeService.queryEmployee(employeeBean));
         return jsonObject;
     }
+
+    //登录
+    @PostMapping(value = "/login")
+    public JSONObject login(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        jsonObject.put(Constant.Result.RETDATA, employeeService.login(employeeBean));
+        return jsonObject;
+    }
+
+    //微信绑定
+    @PostMapping(value = "/bindOpenId")
+    public JSONObject bindOpenId(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        employeeService.bindOpenId(employeeBean);
+        return jsonObject;
+    }
+
+
 }

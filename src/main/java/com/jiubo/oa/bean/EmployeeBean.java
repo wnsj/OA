@@ -114,4 +114,7 @@ public class EmployeeBean implements Serializable {
 
     //排除员工
     private String[] excludeEmp;
+
+    //是否显示密码
+    private String showPwd;
 }
