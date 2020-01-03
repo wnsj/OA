@@ -58,6 +58,10 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addAskLeave(AskLeaveBean askLeaveBean) throws Exception {
+        askLeaveBean.setState("0");
+        askLeaveBean.setExaminerAdv("0");
+        askLeaveBean.setAuditorAdv("0");
+        askLeaveBean.setApproverAdv("0");
         askLeaveBean.setCreateDate(TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime()));
         if (askLeaveDao.addAskLeave(askLeaveBean) <= 0) throw new MessageException("操作失败!");
     }

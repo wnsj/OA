@@ -37,6 +37,18 @@ public class AskLeaveAction {
         return jsonObject;
     }
 
+    //添加请假申请
+    @PostMapping(value = "/addAskLeave")
+    public JSONObject addAskLeave(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        AskLeaveBean askLeaveBean = JSONObject.parseObject(params, AskLeaveBean.class);
+        askLeaveService.addAskLeave(askLeaveBean);
+        return jsonObject;
+    }
+
     //取消，审核请假申请
     @PostMapping(value = "/operationLeave")
     public JSONObject operationLeave(@RequestBody String params) throws Exception {
