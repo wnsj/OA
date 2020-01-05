@@ -2,7 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jiubo.oa.dao.DepartmentDao">
 
-<!--    <select id="queryStore" resultType="com.jiubo.samy.bean.StoreBean">-->
-
-<!--    </select>-->
+    <!--    查询部门-->
+    <select id="queryDepartment" resultType="com.jiubo.oa.bean.DepartmentBean">
+        SELECT DEPT_ID, DEPT_NAME, PARENT_ID, DEPT_LEVEL, ISUSE
+        FROM DEPARTMENT
+    </select>
 </mapper>

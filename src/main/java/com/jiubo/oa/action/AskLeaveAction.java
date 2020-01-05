@@ -45,7 +45,7 @@ public class AskLeaveAction {
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
         AskLeaveBean askLeaveBean = JSONObject.parseObject(params, AskLeaveBean.class);
-        askLeaveService.addAskLeave(askLeaveBean);
+        askLeaveService.applyLeave(askLeaveBean);
         return jsonObject;
     }
 

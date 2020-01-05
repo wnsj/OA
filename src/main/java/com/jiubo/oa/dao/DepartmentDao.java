@@ -20,5 +20,5 @@ public interface DepartmentDao extends BaseMapper<DepartmentBean> {
     //public int updateDepartment(DepartmentBean departmentBean);
 
     //查询部门
-    //public List<DepartmentBean> queryDepartment(DepartmentBean departmentBean);
+    public List<DepartmentBean> queryDepartment(DepartmentBean departmentBean);
 }

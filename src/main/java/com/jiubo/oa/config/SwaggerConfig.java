@@ -1,6 +1,7 @@
 package com.jiubo.oa.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -8,18 +9,19 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
 
 /**
- * @desc:Swagger配置类
+ * @desc:Swagger配置类(文档访问链接http://127.0.0.1:8080/swagger-ui.html）
  * @date: 2019-09-10 08:31
  * @author: dx
  * @version: 1.0
  */
-//@Configuration
+@Configuration
 //开启Swagger2
-//@EnableSwagger2
+@EnableSwagger2
 public class SwaggerConfig {
 
     //配置要扫描接口的方式

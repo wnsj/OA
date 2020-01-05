@@ -62,6 +62,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
         EmployeeBean employee = employeeBeans.get(0);
         if (!employee.getAccPwd().equals(employeeBean.getAccPwd())) throw new MessageException("密码错误!");
         if (StringUtils.isNotBlank(employee.getOpenId()))throw new MessageException("该账号已绑定微信，不可重复绑定!");
+        employeeBeans = queryEmployee(new EmployeeBean().setOpenId(employeeBean.getOpenId()));
+        if (employeeBeans.size() > 0)throw new MessageException("该微信已绑定账号,不可重复绑定!");
         updateEmployee(new EmployeeBean().setEmpId(employee.getEmpId()).setOpenId(employeeBean.getOpenId()));
     }
 }

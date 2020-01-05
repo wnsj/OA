@@ -94,4 +94,11 @@ public class AskLeaveBean implements Serializable {
     //批准时间
     private String approverDate;
 
+    //处理状态【0:全部 ，1：处理中，2：已通过，3：未通过】
+    private String advState;
+
+    private String deptId;
+
+    private String deptName;
+
 }

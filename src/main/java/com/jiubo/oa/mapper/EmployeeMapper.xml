@@ -2,9 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jiubo.oa.dao.EmployeeDao">
 
-    <!--    查询员工
-
-    -->
+    <!--    查询员工-->
     <select id="queryEmployee" resultType="com.jiubo.oa.bean.EmployeeBean">
         SELECT E.EMP_ID, E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY, E.POLITICAL, E.REG_RESIDENCE,
         E.NATIVE_PLACE, E.PHONE, E.PERMANENT_ADDRESS, E.ADDRESS, E.EMERGENCY_CONTACT,
@@ -21,25 +19,25 @@
         ON E.POS_ID = P.POS_ID
         WHERE 1 = 1
         <if test="empId != null and empId != ''">
-            AND EMP_ID = #{empId}
+            AND E.EMP_ID = #{empId}
         </if>
         <if test="empName != null and empName != ''">
-            AND EMP_NAME LIKE CONCAT('%',#{empName},'%')
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
         </if>
         <if test="deptId != null and deptId != ''">
-            AND DEPT_ID = #{deptId}
+            AND E.DEPT_ID = #{deptId}
         </if>
         <if test="posId != null and posId != ''">
-            AND POS_ID = #{posId}
+            AND E.POS_ID = #{posId}
         </if>
         <if test="accName != null and accName != ''">
-            AND ACC_NAME = #{accName}
+            AND E.ACC_NAME = #{accName}
         </if>
         <if test="openId != null and openId != ''">
-            AND OPEN_ID = #{openId}
+            AND E.OPEN_ID = #{openId}
         </if>
         <if test="excludeEmp != null and excludeEmp.length > 0">
-            AND EMP_ID NOT IN
+            AND E.EMP_ID NOT IN
             <foreach collection="excludeEmp" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>

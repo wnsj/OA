@@ -17,7 +17,7 @@ public interface CommonDao {
     @Select("SELECT now()")
     public Date queryDBTime();
 
-    @Insert("INSERT INTO WX_TOKEN (TOKEN, CREATE_DATE) VALUES (#{token}, GETDATE())")
+    @Insert("INSERT INTO WX_TOKEN (TOKEN, CREATE_DATE) VALUES (#{token}, NOW())")
     @Options(useGeneratedKeys = true,keyProperty = "tkId")
     public int addWxToken(WxTokenBean wxTokenBean);
 

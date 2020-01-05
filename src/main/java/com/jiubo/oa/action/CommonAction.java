@@ -26,7 +26,7 @@ public class CommonAction {
     private WxSendMessageService wxSendMessageService;
 
     //获取数据库时间
-    @RequestMapping("/queryDBTime")
+    @RequestMapping(value = "/queryDBTime",method={RequestMethod.GET,RequestMethod.POST})
     public JSONObject queryDBTime(){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);

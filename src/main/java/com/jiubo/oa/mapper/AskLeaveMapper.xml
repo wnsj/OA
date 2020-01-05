@@ -7,10 +7,13 @@
         SELECT A.AL_ID, A.LT_ID, A.EMP_ID, A.CREATE_DATE, A.BEG_DATE, A.END_DATE, A.REMARK, A.BILL, A.STATE,
         A.EXAMINER, A.EXAMINER_ADV, A.EXAMINER_DATE, A.AUDITOR, A.AUDITOR_ADV, A.AUDITOR_DATE, A.APPROVER,
         A.APPROVER_ADV, A.APPROVER_DATE,E.EMP_NAME,EM.EMP_NAME EXAMINER_NAME,EMP.EMP_NAME AUDITOR_NAME,EMPL.EMP_NAME
-        APPROVER_NAME,LT.LT_NAME
+        APPROVER_NAME,
+        LT.LT_NAME,D.DEPT_ID,D.DEPT_NAME
         FROM ASK_LEAVE A
         LEFT JOIN EMPLOYEE E
         ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON D.DEPT_ID = E.DEPT_ID
         LEFT JOIN EMPLOYEE EM
         ON EM.EMP_ID = A.EXAMINER
         LEFT JOIN EMPLOYEE EMP
@@ -20,6 +23,9 @@
         LEFT JOIN LEAVE_TYPE LT
         ON LT.LT_ID = A.LT_ID
         WHERE 1 = 1
+        <if test="alId != null and alId != ''">
+            AND A.AL_ID = #{alId}
+        </if>
         <if test="empId != null and empId != ''">
             AND (
             A.EMP_ID = #{empId}
@@ -27,6 +33,12 @@
             OR A.AUDITOR = #{empId}
             OR A.APPROVER = #{empId}
             )
+        </if>
+        <if test="empName != null and empName != ''">
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+        </if>
+        <if test="deptId != null and deptId != ''">
+            AND E.EMP_ID = #{deptId}
         </if>
         <if test="state != null and state != ''">
             AND A.STATE = #{state}
@@ -39,10 +51,32 @@
             AND A.BEG_DATE >= #{qBegDate}
             AND A.END_DATE &lt; #{qEndDate}
         </if>
+
+        <if test="advState != null and advState != ''">
+            <choose>
+                <when test="advState == 1">
+                    AND (
+                    A.APPROVER_ADV != 1
+                    OR A.EXAMINER_ADV = 0 OR A.EXAMINER_ADV = 1
+                    OR A.AUDITOR_ADV = 0 OR A.AUDITOR_ADV = 1
+                    )
+                </when>
+                <when test="advState == 2">
+                    AND A.APPROVER_ADV = 1
+                </when>
+                <when test="advState == 3">
+                    AND (
+                    A.EXAMINER_ADV = 2
+                    OR A.AUDITOR_ADV = 2
+                    OR A.APPROVER_ADV = 2
+                    )
+                </when>
+            </choose>
+        </if>
     </select>
 
     <!--    添加请假-->
-    <insert id="addAskLeave">
+    <insert id="addAskLeave" useGeneratedKeys="true" keyProperty="alId">
         INSERT INTO ASK_LEAVE (LT_ID, EMP_ID, CREATE_DATE, BEG_DATE, END_DATE,
                                REMARK, Bill, STATE, EXAMINER, EXAMINER_ADV,
                                EXAMINER_DATE, AUDITOR, AUDITOR_ADV, AUDITOR_DATE, APPROVER,
@@ -59,55 +93,55 @@
         SET
         <trim suffixOverrides=",">
             <if test="ltId != null and ltId != ''">
-                ,LT_ID = #{ltId}
+                LT_ID = #{ltId},
             </if>
             <if test="empId != null and empId != ''">
-                ,EMP_ID = #{empId}
+                EMP_ID = #{empId},
             </if>
             <if test="createDate != null and createDate != ''">
-                ,CREATE_DATE = #{createDate}
+                CREATE_DATE = #{createDate},
             </if>
             <if test="begDate != null and begDate != ''">
-                ,BEG_DATE = #{begDate}
+                BEG_DATE = #{begDate},
             </if>
             <if test="endDate != null and endDate != ''">
-                ,END_DATE = #{endDate}
+                END_DATE = #{endDate},
             </if>
             <if test="remark != null and remark != ''">
-                ,REMARK = #{remark}
+                REMARK = #{remark},
             </if>
             <if test="bill != null and bill != ''">
-                ,Bill = #{bill}
+                Bill = #{bill},
             </if>
             <if test="state != null and state != ''">
-                ,STATE = #{state}
+                STATE = #{state},
             </if>
             <if test="examiner != null and examiner != ''">
-                ,EXAMINER = #{examiner}
+                EXAMINER = #{examiner},
             </if>
             <if test="examinerAdv != null and examinerAdv != ''">
-                ,EXAMINER_ADV = #{examinerAdv}
+                EXAMINER_ADV = #{examinerAdv},
             </if>
             <if test="examinerDate != null and examinerDate != ''">
-                ,EXAMINER_DATE = #{examinerDate}
+                EXAMINER_DATE = #{examinerDate},
             </if>
             <if test="auditor != null and auditor != ''">
-                ,AUDITOR = #{auditor}
+                AUDITOR = #{auditor},
             </if>
             <if test="auditorAdv != null and auditorAdv != ''">
-                ,AUDITOR_ADV = #{auditorAdv}
+                AUDITOR_ADV = #{auditorAdv},
             </if>
             <if test="auditorDate != null and auditorDate != ''">
-                ,AUDITOR_DATE = #{auditorDate}
+                AUDITOR_DATE = #{auditorDate},
             </if>
             <if test="approver != null and approver != ''">
-                ,APPROVER = #{approver}
+                APPROVER = #{approver},
             </if>
             <if test="approverAdv != null and approverAdv != ''">
-                ,APPROVER_ADV = #{approverAdv}
+                APPROVER_ADV = #{approverAdv},
             </if>
             <if test="approverDate != null and approverDate != ''">
-                ,APPROVER_DATE = #{approverDate}
+                APPROVER_DATE = #{approverDate},
             </if>
         </trim>
         WHERE AL_ID = #{alId}
