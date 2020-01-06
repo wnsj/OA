@@ -249,49 +249,61 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
                     jsonObject = new JSONObject();
                     jsonObject.put("touser", employeeBean.getOpenId());
-                    jsonObject.put("template_id", "k4Cca45hu5DUriXAff3v3mnrIX6Yaf4IjateuLAkxgk");
+                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
                     jsonObject.put("url", modifyUrl.concat("?alId=").concat(askLeave.getAlId()));
                     data = new JSONObject();
 
                     JSONObject content = new JSONObject();
-                    content.put("value", "您的请假申请未通过审核!");
+                    content.put("value", "审核未通过!");
                     content.put("color", "#173177");
                     data.put("first", content);
+
+                    //申请人
+                    content = new JSONObject();
+                    content.put("value", employeeBean.getEmpName());
+                    content.put("color", "#173177");
+                    data.put("keyword1", content);
 
                     //请假类型
                     content = new JSONObject();
                     content.put("value", askLeave.getLtName());
                     content.put("color", "#173177");
-                    data.put("keyword1", content);
+                    data.put("keyword2", content);
 
                     //请假时间
                     content = new JSONObject();
-                    content.put("value", askLeave.getBegDate() + "--" + askLeave.getEndDate());
+                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(askLeave.getCreateDate())));
                     content.put("color", "#173177");
-                    data.put("keyword2", content);
+                    data.put("keyword3", content);
+
+                    //备注
+                    content = new JSONObject();
+                    content.put("value", "审核未通过，点击查看详情!");
+                    content.put("color", "#173177");
+                    data.put("remark", content);
 
                     //请假原因
-                    content = new JSONObject();
-                    content.put("value", askLeave.getRemark());
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getRemark());
+//                    content.put("color", "#173177");
+//                    data.put("keyword3", content);
 
-                    content = new JSONObject();
-                    content.put("value", askLeave.getRemark());
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getRemark());
+//                    content.put("color", "#173177");
+//                    data.put("keyword3", content);
 
                     //审批人
-                    content = new JSONObject();
-                    content.put("value", askLeave.getExaminerName());
-                    content.put("color", "#173177");
-                    data.put("keyword4", content);
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getExaminerName());
+//                    content.put("color", "#173177");
+//                    data.put("keyword4", content);
 
                     //审批结果
-                    content = new JSONObject();
-                    content.put("value", "未通过!");
-                    content.put("color", "#173177");
-                    data.put("keyword5", content);
+//                    content = new JSONObject();
+//                    content.put("value", "未通过!");
+//                    content.put("color", "#173177");
+//                    data.put("keyword5", content);
 
                     jsonObject.put("data", data);
 
@@ -366,49 +378,68 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
                     jsonObject = new JSONObject();
                     jsonObject.put("touser", employeeBean.getOpenId());
-                    jsonObject.put("template_id", "k4Cca45hu5DUriXAff3v3mnrIX6Yaf4IjateuLAkxgk");
+                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
                     jsonObject.put("url", modifyUrl.concat("?alId=").concat(askLeave.getAlId()));
                     data = new JSONObject();
 
                     JSONObject content = new JSONObject();
-                    content.put("value", "您的请假申请未通过审核!");
+                    content.put("value", "审核未通过!");
                     content.put("color", "#173177");
                     data.put("first", content);
+
+                    //申请人
+                    content = new JSONObject();
+                    content.put("value", employeeBean.getEmpName());
+                    content.put("color", "#173177");
+                    data.put("keyword1", content);
 
                     //请假类型
                     content = new JSONObject();
                     content.put("value", askLeave.getLtName());
                     content.put("color", "#173177");
-                    data.put("keyword1", content);
+                    data.put("keyword2", content);
 
                     //请假时间
                     content = new JSONObject();
-                    content.put("value", askLeave.getBegDate() + "--" + askLeave.getEndDate());
+                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(askLeave.getCreateDate())));
                     content.put("color", "#173177");
-                    data.put("keyword2", content);
+                    data.put("keyword3", content);
+
+                    //备注
+                    content = new JSONObject();
+                    content.put("value", "审核未通过，点击查看详情!");
+                    content.put("color", "#173177");
+                    data.put("remark", content);
+
+                    //请假类型
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getLtName());
+//                    content.put("color", "#173177");
+//                    data.put("keyword1", content);
+
+                    //请假时间
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getBegDate() + "--" + askLeave.getEndDate());
+//                    content.put("color", "#173177");
+//                    data.put("keyword2", content);
 
                     //请假原因
-                    content = new JSONObject();
-                    content.put("value", askLeave.getRemark());
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
-
-                    content = new JSONObject();
-                    content.put("value", askLeave.getRemark());
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getRemark());
+//                    content.put("color", "#173177");
+//                    data.put("keyword3", content);
 
                     //审批人
-                    content = new JSONObject();
-                    content.put("value", askLeave.getExaminerName());
-                    content.put("color", "#173177");
-                    data.put("keyword4", content);
+//                    content = new JSONObject();
+//                    content.put("value", askLeave.getExaminerName());
+//                    content.put("color", "#173177");
+//                    data.put("keyword4", content);
 
                     //审批结果
-                    content = new JSONObject();
-                    content.put("value", "未通过!");
-                    content.put("color", "#173177");
-                    data.put("keyword5", content);
+//                    content = new JSONObject();
+//                    content.put("value", "未通过!");
+//                    content.put("color", "#173177");
+//                    data.put("keyword5", content);
 
                     jsonObject.put("data", data);
 
@@ -490,50 +521,57 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
                 jsonObject = new JSONObject();
                 jsonObject.put("touser", employeeBean.getOpenId());
-                jsonObject.put("template_id", "k4Cca45hu5DUriXAff3v3mnrIX6Yaf4IjateuLAkxgk");
+                jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
                 if ("2".equals(askLeaveBean.getApproverAdv()))
-                    jsonObject.put("url", modifyUrl.concat("   ").concat(askLeave.getAlId()));
+                    jsonObject.put("url", modifyUrl.concat("?alId=").concat(askLeave.getAlId()));
                 data = new JSONObject();
 
                 JSONObject content = new JSONObject();
-                content.put("value", "您的请假申请" + result + "审核!");
+                content.put("value", result + "审核!");
                 content.put("color", "#173177");
                 data.put("first", content);
+
+                //申请人
+                content = new JSONObject();
+                content.put("value", employeeBean.getEmpName());
+                content.put("color", "#173177");
+                data.put("keyword1", content);
 
                 //请假类型
                 content = new JSONObject();
                 content.put("value", askLeave.getLtName());
                 content.put("color", "#173177");
-                data.put("keyword1", content);
+                data.put("keyword2", content);
 
                 //请假时间
                 content = new JSONObject();
-                content.put("value", askLeave.getBegDate() + "--" + askLeave.getEndDate());
+                content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(askLeave.getCreateDate())));
                 content.put("color", "#173177");
-                data.put("keyword2", content);
+                data.put("keyword3", content);
+
+                //备注
+                content = new JSONObject();
+                content.put("value", "2".equals(askLeaveBean.getApproverAdv()) ? "审核未通过，点击查看详情!" : "已通过");
+                content.put("color", "#173177");
+                data.put("remark", content);
 
                 //请假原因
-                content = new JSONObject();
-                content.put("value", askLeave.getRemark());
-                content.put("color", "#173177");
-                data.put("keyword3", content);
-
-                content = new JSONObject();
-                content.put("value", askLeave.getRemark());
-                content.put("color", "#173177");
-                data.put("keyword3", content);
+//                content = new JSONObject();
+//                content.put("value", askLeave.getRemark());
+//                content.put("color", "#173177");
+//                data.put("keyword3", content);
 
                 //审批人
-                content = new JSONObject();
-                content.put("value", askLeave.getApproverName());
-                content.put("color", "#173177");
-                data.put("keyword4", content);
+//                content = new JSONObject();
+//                content.put("value", askLeave.getApproverName());
+//                content.put("color", "#173177");
+//                data.put("keyword4", content);
 
                 //审批结果
-                content = new JSONObject();
-                content.put("value", result);
-                content.put("color", "#173177");
-                data.put("keyword5", content);
+//                content = new JSONObject();
+//                content.put("value", result);
+//                content.put("color", "#173177");
+//                data.put("keyword5", content);
 
                 jsonObject.put("data", data);
 
