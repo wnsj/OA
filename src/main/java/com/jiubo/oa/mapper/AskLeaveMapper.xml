@@ -55,21 +55,30 @@
         <if test="advState != null and advState != ''">
             <choose>
                 <when test="advState == 1">
+                    AND A.STATE != 1
+                    AND A.APPROVER_ADV != 1
+                    AND A.EXAMINER_ADV != 2
+                    AND A.AUDITOR_ADV != 2
+                    AND A.APPROVER_ADV != 2
                     AND (
-                    A.APPROVER_ADV != 1
-                    OR A.EXAMINER_ADV = 0 OR A.EXAMINER_ADV = 1
-                    OR A.AUDITOR_ADV = 0 OR A.AUDITOR_ADV = 1
+                        A.EXAMINER_ADV = 0 OR A.EXAMINER_ADV = 1
+                        OR A.AUDITOR_ADV = 0 OR A.AUDITOR_ADV = 1
                     )
                 </when>
                 <when test="advState == 2">
+                    AND A.STATE != 1
                     AND A.APPROVER_ADV = 1
                 </when>
                 <when test="advState == 3">
+                    AND A.STATE != 1
                     AND (
-                    A.EXAMINER_ADV = 2
-                    OR A.AUDITOR_ADV = 2
-                    OR A.APPROVER_ADV = 2
+                        A.EXAMINER_ADV = 2
+                        OR A.AUDITOR_ADV = 2
+                        OR A.APPROVER_ADV = 2
                     )
+                </when>
+                <when test="advState == 4">
+                    AND A.STATE = 1
                 </when>
             </choose>
         </if>
