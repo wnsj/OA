@@ -15,7 +15,7 @@ autoReconnect        |     true          |    防止链接突然中断，开启�
 maxReconnects        |     5             |    最大重连次数
 
 --------
-[MYSQL_DOC][MYSQL_DOC]
+### [MYSQL_DOC][MYSQL_DOC]
 [MYSQL_DOC]:https://dev.mysql.com/doc/refman/5.5/en/general-security-issues.html
 
 
