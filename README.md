@@ -16,7 +16,7 @@ maxReconnects        |     5             |    最大重连次数
 
 --------
 [MYSQL DOC]:[https://dev.mysql.com/doc/refman/5.5/en/general-security-issues.html]
-------------------------
+
 
 
 
