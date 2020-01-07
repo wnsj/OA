@@ -4,9 +4,6 @@
 ----------------------------------------------
 | 参数名    | 参数值    | 说明   |
 | ---- | ---- | ---- |
-|      |      |      |
-|      |      |      |
-|      |      |      |
 serverTimezone       |     GMT%2B8       |    设置时区(与实际时间出现误差)
 useTimezone          |     true          |    主要用在web服务器和数据库部署在不同时区时,转换二者交互中时间数据
 useSSL               |     false         |    避免出现该错误或警告[According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. ]
