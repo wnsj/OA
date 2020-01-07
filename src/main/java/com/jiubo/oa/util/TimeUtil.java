@@ -80,7 +80,7 @@ public class TimeUtil {
     private static SimpleDateFormat sdf_YYYY_MM_DD_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private static SimpleDateFormat sdf_YYYY_MM = new SimpleDateFormat(YYYY_MM);
     private static SimpleDateFormat sdf_YYYY$MM = new SimpleDateFormat(YYYY$MM);
-    
+
 
     //静态日历对象
     private static Calendar calendar = Calendar.getInstance();
@@ -94,24 +94,24 @@ public class TimeUtil {
     public final static int UNIT_SECOND = Calendar.SECOND;
     //24进制小时
     public final static int UNIT_HOUR_OF_DAY = Calendar.HOUR_OF_DAY;
-    
-    
+
+
     /**
      * 转换带T日期格式
      */
     public synchronized static String convertDateT(String strDate) {
-    	String str = "";
-    	try {
-    		strDate = strDate.replace("T", " ");
-			Date date = sdf_YYYY_MM_DD_HH_MM.parse(strDate);
-			str = sdf_YYYY_MM_DD_HH_MM.format(date);
-			return str;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-    	return str;
+        String str = "";
+        try {
+            strDate = strDate.replace("T", " ");
+            Date date = sdf_YYYY_MM_DD_HH_MM.parse(strDate);
+            str = sdf_YYYY_MM_DD_HH_MM.format(date);
+            return str;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return str;
     }
-    
+
     /**
      * 返回日期增减
      */
@@ -877,7 +877,7 @@ public class TimeUtil {
     }
 
     //获取数据库时间
-    public static synchronized Date getDBTime(){
+    public static synchronized Date getDBTime() {
         CommonService commonService = InstantContextAfterProcessor.getService("commonServiceImpl", CommonService.class);
         return commonService.queryDBTime();
     }

@@ -14,7 +14,7 @@ import java.util.Date;
 public interface CommonDao {
 
     //获取数据库时间
-    @Select("SELECT now()")
+    @Select("SELECT NOW()")
     public Date queryDBTime();
 
     @Insert("INSERT INTO WX_TOKEN (TOKEN, CREATE_DATE) VALUES (#{token}, NOW())")

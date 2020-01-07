@@ -27,4 +27,7 @@ public interface AskLeaveService extends IService<AskLeaveBean> {
 
     //取消，审核申请
     public void operationLeave(AskLeaveBean askLeaveBean) throws Exception;
+
+    //查询未处理的申请
+    public List<AskLeaveBean> queryUntreatedAskLeave(AskLeaveBean askLeaveBean);
 }

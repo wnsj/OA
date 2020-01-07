@@ -25,7 +25,8 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public Date queryDBTime() {
-        return commonDao.queryDBTime();
+        Date date = commonDao.queryDBTime();
+        return date;
     }
 
     @Override
