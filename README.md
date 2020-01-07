@@ -1,7 +1,7 @@
 # OA
 ### MySQL URL 参数说明（勿删）
-#### jdbc:mysql://172.16.213.210:3306/jaoa?useSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&useTimezone=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull
-
+#### jdbc:mysql://172.16.213.210:3306/jaoauseSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&useTimezone=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull
+----------------------------------------------
 参数名                |     参数值        |    说明
                     -|                  -|
 serverTimezone       |     GMT%2B8       |    设置时区(与实际时间出现误差)
