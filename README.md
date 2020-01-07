@@ -2,7 +2,12 @@
 ### MySQL URL 参数说明（勿删）
 #### jdbc:mysql://172.16.213.210:3306/jaoauseSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&useTimezone=true&serverTimezone=GMT%2B8&zeroDateTimeBehavior=convertToNull
 ----------------------------------------------
-参数名|参数值|说明
+| 参数名    | 参数值    | 说明   |
+| ---- | ---- | ---- |
+|      |      |      |
+|      |      |      |
+|      |      |      |
+
 
 ------------------------------------------------
                     -|                  -|      -|
@@ -20,10 +25,5 @@ maxReconnects        |     5             |    最大重连次数
 [MYSQL DOC]:[https://dev.mysql.com/doc/refman/5.5/en/general-security-issues.html]
 ------------------------
 
-| 1    | 2    | 3    |
-| ---- | ---- | ---- |
-|      |      |      |
-|      |      |      |
-|      |      |      |
 
 
