@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.RestDownDao">
+
+    <!--    查询请假类型-->
+    <select id="queryRestDown" resultType="com.jiubo.oa.bean.RestDownBean">
+        SELECT R.RD_ID,
+        R.EMP_ID,
+        R.REA_ID,
+        R.STATE,
+        R.CREATE_DATE,
+        R.OVERTIME_BEG,
+        R.OVERTIME_END,
+        R.REST_DATE_BEG,
+        R.REST_DATE_END,
+        R.REMARK,
+        R.EXAMINER,
+        R.EXAMINER_ADV,
+        R.EXAMINER_DATE,
+        R.AUDITOR,
+        R.AUDITOR_ADV,
+        R.AUDITOR_DATE,
+        R.APPROVER,
+        R.APPROVER_ADV,
+        R.APPROVER_DATE,
+        E.EMP_NAME,
+        E.DEPT_ID,
+        D.DEPT_NAME,
+        E.POS_ID,
+        P.POS_NAME,
+        EM.EMP_NAME EXAMINERNAME,
+        EMP.EMP_NAME AUDITORNAME,
+        EMPL.EMP_NAME APPROVERNAME,
+        RR.REA_NAME
+        FROM REST_DOWN R
+        LEFT JOIN EMPLOYEE E
+        ON R.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = R.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = R.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = R.APPROVER
+        LEFT JOIN REST_REASON RR
+        ON R.REA_ID = RR.REA_ID
+        WHERE 1 = 1
+        <if test="rdId != null and rdId != ''">
+            AND R.RD_ID = #{rdId}
+        </if>
+        <if test="empId != null and empId != ''">
+            AND (
+            R.EMP_ID = #{empId}
+            OR R.EXAMINER = #{empId}
+            OR R.AUDITOR = #{empId}
+            OR R.APPROVER = #{empId}
+            )
+        </if>
+        <if test="empName != null and empName != ''">
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+        </if>
+        <if test="deptId != null and deptId != ''">
+            AND E.DEPT_ID = #{deptId}
+        </if>
+        <if test="createBegDate != null and createBegDate != '' and createEndDate != null and createEndDate != ''">
+            AND R.CREATE_DATE >= #{createBegDate}
+            AND R.CREATE_DATE &lt; #{createEndDate}
+        </if>
+        <if test="overtimeBeg != null and overtimeBeg != '' and overtimeEnd != null and overtimeEnd != ''">
+            AND R.OVERTIME_BEG >= #{overtimeBeg}
+            AND R.OVERTIME_END &lt; #{overtimeEnd}
+        </if>
+        <if test="restDateBeg != null and restDateBeg != '' and restDateEnd != null and restDateEnd != ''">
+            AND R.REST_DATE_BEG >= #{restDateBeg}
+            AND R.REST_DATE_END &lt; #{restDateEnd}
+        </if>
+        <if test="advState != null and advState != ''">
+            <choose>
+                <when test="advState == 0"></when>
+                <when test="advState == 1">
+                    AND R.STATE != 1
+                    AND R.APPROVER_ADV != 1
+                    AND R.EXAMINER_ADV != 2
+                    AND R.AUDITOR_ADV != 2
+                    AND R.APPROVER_ADV != 2
+                    AND (
+                    R.EXAMINER_ADV = 0 OR R.EXAMINER_ADV = 1
+                    OR R.AUDITOR_ADV = 0 OR R.AUDITOR_ADV = 1
+                    )
+                </when>
+                <when test="advState == 2">
+                    AND R.STATE != 1
+                    AND R.APPROVER_ADV = 1
+                </when>
+                <when test="advState == 3">
+                    AND R.STATE != 1
+                    AND (
+                    R.EXAMINER_ADV = 2
+                    OR R.AUDITOR_ADV = 2
+                    OR R.APPROVER_ADV = 2
+                    )
+                </when>
+                <when test="advState == 4">
+                    AND R.STATE = 1
+                </when>
+            </choose>
+        </if>
+        ORDER BY R.RD_ID
+    </select>
+
+    <!--    添加倒休-->
+    <insert id="addRestDown" useGeneratedKeys="true" keyProperty="rdId">
+        INSERT INTO REST_DOWN (RD_ID, EMP_ID, REA_ID, STATE, CREATE_DATE, OVERTIME_BEG, OVERTIME_END,
+                               REST_DATE_BEG, REST_DATE_END, REMARK, EXAMINER, EXAMINER_ADV,
+                               EXAMINER_DATE, AUDITOR, AUDITOR_ADV, AUDITOR_DATE, APPROVER,
+                               APPROVER_ADV, APPROVER_DATE)
+        VALUES (#{rdId}, #{empId}, #{reaId}, #{state}, #{createDate}, #{overtimeBeg}, #{overtimeEnd},
+                #{restDateBeg}, #{restDateEnd}, #{remark}, #{examiner}, #{examinerAdv},
+                #{examinerDate}, #{auditor}, #{auditorAdv}, #{auditorDate}, #{approver},
+                #{approverAdv}, #{approverDate})
+    </insert>
+
+    <!--    修改倒休-->
+    <update id="updateRestDown">
+        UPDATE REST_DOWN
+        SET
+        <trim suffixOverrides=",">
+            <if test="empId != null and empId != ''">
+                EMP_ID = #{empId},
+            </if>
+            <if test="reaId != null and reaId != ''">
+                REA_ID = #{reaId},
+            </if>
+            <if test="state != null and state != ''">
+                STATE = #{state},
+            </if>
+            <if test="createDate != null and createDate != ''">
+                CREATE_DATE = #{createDate},
+            </if>
+            <if test="overtimeBeg != null and overtimeBeg != ''">
+                OVERTIME_BEG = #{overtimeBeg},
+            </if>
+            <if test="overtimeEnd != null and overtimeEnd != ''">
+                OVERTIME_END = #{overtimeEnd},
+            </if>
+            <if test="restDateBeg != null and restDateBeg != ''">
+                REST_DATE_BEG = #{restDateBeg},
+            </if>
+            <if test="restDateEnd != null and restDateEnd != ''">
+                REST_DATE_END = #{restDateEnd},
+            </if>
+            <if test="remark != null and remark != ''">
+                REMARK = #{remark},
+            </if>
+            <if test="examiner != null and examiner != ''">
+                EXAMINER = #{examiner},
+            </if>
+            <if test="examinerAdv != null and examinerAdv != ''">
+                EXAMINER_ADV = #{examinerAdv},
+            </if>
+            <if test="examinerDate != null and examinerDate != ''">
+                EXAMINER_DATE = #{examinerDate},
+            </if>
+            <if test="auditor != null and auditor != ''">
+                AUDITOR = #{auditor},
+            </if>
+            <if test="auditorAdv != null and auditorAdv != ''">
+                AUDITOR_ADV = #{auditorAdv},
+            </if>
+            <if test="auditorDate != null and auditorDate != ''">
+                AUDITOR_DATE = #{auditorDate},
+            </if>
+            <if test="approver != null and approver != ''">
+                APPROVER = #{approver},
+            </if>
+            <if test="approverAdv != null and approverAdv != ''">
+                APPROVER_ADV = #{approverAdv},
+            </if>
+            <if test="approverDate != null and approverDate != ''">
+                APPROVER_DATE = #{approverDate},
+            </if>
+        </trim>
+        WHERE RD_ID = #{rdId}
+    </update>
+
+    <!--    查询未处理的倒休申请-->
+    <select id="queryUntreatedRestDown">
+        SELECT *
+        FROM (
+        SELECT R.RD_ID,
+        R.EMP_ID,
+        R.REA_ID,
+        R.STATE,
+        R.CREATE_DATE,
+        R.OVERTIME_BEG,
+        R.OVERTIME_END,
+        R.REST_DATE_BEG,
+        R.REST_DATE_END,
+        R.REMARK,
+        R.EXAMINER,
+        R.EXAMINER_ADV,
+        R.EXAMINER_DATE,
+        R.AUDITOR,
+        R.AUDITOR_ADV,
+        R.AUDITOR_DATE,
+        R.APPROVER,
+        R.APPROVER_ADV,
+        R.APPROVER_DATE,
+        E.EMP_NAME,
+        E.DEPT_ID,
+        D.DEPT_NAME,
+        E.POS_ID,
+        P.POS_NAME,
+        EM.EMP_NAME EXAMINERNAME,
+        EMP.EMP_NAME AUDITORNAME,
+        EMPL.EMP_NAME APPROVERNAME,
+        RR.REA_NAME
+        FROM REST_DOWN R
+        LEFT JOIN EMPLOYEE E
+        ON R.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = R.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = R.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = R.APPROVER
+        LEFT JOIN REST_REASON RR
+        ON R.REA_ID = RR.REA_ID
+        WHERE R.EXAMINER_ADV = 0
+        AND R.STATE = 0
+        AND R.EXAMINER = #{empId}
+
+        UNION
+
+        SELECT R.RD_ID,
+        R.EMP_ID,
+        R.REA_ID,
+        R.STATE,
+        R.CREATE_DATE,
+        R.OVERTIME_BEG,
+        R.OVERTIME_END,
+        R.REST_DATE_BEG,
+        R.REST_DATE_END,
+        R.REMARK,
+        R.EXAMINER,
+        R.EXAMINER_ADV,
+        R.EXAMINER_DATE,
+        R.AUDITOR,
+        R.AUDITOR_ADV,
+        R.AUDITOR_DATE,
+        R.APPROVER,
+        R.APPROVER_ADV,
+        R.APPROVER_DATE,
+        E.EMP_NAME,
+        E.DEPT_ID,
+        D.DEPT_NAME,
+        E.POS_ID,
+        P.POS_NAME,
+        EM.EMP_NAME EXAMINERNAME,
+        EMP.EMP_NAME AUDITORNAME,
+        EMPL.EMP_NAME APPROVERNAME,
+        RR.REA_NAME
+        FROM REST_DOWN R
+        LEFT JOIN EMPLOYEE E
+        ON R.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = R.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = R.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = R.APPROVER
+        LEFT JOIN REST_REASON RR
+        ON R.REA_ID = RR.REA_ID
+        WHERE R.EXAMINER_ADV = 1
+        AND R.AUDITOR = #{empId}
+        AND R.AUDITOR_ADV = 0
+        AND R.STATE = 0
+
+        UNION
+
+        SELECT R.RD_ID,
+        R.EMP_ID,
+        R.REA_ID,
+        R.STATE,
+        R.CREATE_DATE,
+        R.OVERTIME_BEG,
+        R.OVERTIME_END,
+        R.REST_DATE_BEG,
+        R.REST_DATE_END,
+        R.REMARK,
+        R.EXAMINER,
+        R.EXAMINER_ADV,
+        R.EXAMINER_DATE,
+        R.AUDITOR,
+        R.AUDITOR_ADV,
+        R.AUDITOR_DATE,
+        R.APPROVER,
+        R.APPROVER_ADV,
+        R.APPROVER_DATE,
+        E.EMP_NAME,
+        E.DEPT_ID,
+        D.DEPT_NAME,
+        E.POS_ID,
+        P.POS_NAME,
+        EM.EMP_NAME EXAMINERNAME,
+        EMP.EMP_NAME AUDITORNAME,
+        EMPL.EMP_NAME APPROVERNAME,
+        RR.REA_NAME
+        FROM REST_DOWN R
+        LEFT JOIN EMPLOYEE E
+        ON R.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = R.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = R.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = R.APPROVER
+        LEFT JOIN REST_REASON RR
+        ON R.REA_ID = RR.REA_ID
+        WHERE R.EXAMINER_ADV = 1
+        AND R.AUDITOR_ADV = 1
+        AND R.APPROVER = #{empId}
+        AND R.APPROVER_ADV = 0
+        AND R.STATE = 0
+        ) A
+        WHERE 1 = 1
+        <if test="rdId != null and rdId != ''">
+            AND A.RD_ID = #{rdId}
+        </if>
+    </select>
+</mapper>

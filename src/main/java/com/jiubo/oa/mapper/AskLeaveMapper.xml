@@ -81,6 +81,7 @@
                 </when>
             </choose>
         </if>
+        ORDER BY A.AL_ID
     </select>
 
     <!--    添加请假-->

@@ -4,15 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.jiubo.oa.common.Constant;
 import com.jiubo.oa.service.CommonService;
 import com.jiubo.oa.service.WxSendMessageService;
-import com.jiubo.oa.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @desc:公共服务接口
@@ -36,12 +31,7 @@ public class CommonAction {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("dbDate",commonService.queryDBTime());
-        Date dbTime = TimeUtil.getDBTime();
-        map.put("dbTime",dbTime);
-        System.out.println(TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(dbTime));
-        jsonObject.put(Constant.Result.RETDATA, map);
+        jsonObject.put(Constant.Result.RETDATA, commonService.queryDBTime());
         return jsonObject;
     }
 

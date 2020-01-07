@@ -1,6 +1,5 @@
 package com.jiubo.oa.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jiubo.oa.bean.AskLeaveBean;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,8 +68,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
         askLeaveBean.setExaminerAdv("0");
         askLeaveBean.setAuditorAdv("0");
         askLeaveBean.setApproverAdv("0");
-        Date now = TimeUtil.getDBTime();
-        askLeaveBean.setCreateDate(TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(now));
+        askLeaveBean.setCreateDate(TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime()));
         if (askLeaveDao.addAskLeave(askLeaveBean) <= 0) throw new MessageException("操作失败!");
     }
 
@@ -246,6 +243,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 askLeaveBean.setExaminerAdv("0");
                 askLeaveBean.setAuditorAdv("0");
                 askLeaveBean.setApproverAdv("0");
+                askLeaveBean.setCreateDate(askLeave.getCreateDate());
                 updateAskLeave(askLeaveBean);
                 applyLeaveSendMsg(askLeaveBean, false, list);
             }
