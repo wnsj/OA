@@ -136,4 +136,184 @@
         </trim>
         WHERE EMP_ID = #{empId}
     </update>
+
+
+    <!--新增员工基本信息-->
+    <insert id="addEmployee" useGeneratedKeys="true" keyProperty="empId">
+        INSERT INTO `employee`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="empName != null and empName != ''">
+                EMP_NAME,
+            </if>
+            <if test="sex != null and sex != ''">
+                SEX,
+            </if>
+            <if test="idCard != null and idCard != ''">
+                IDCARD,
+            </if>
+            <if test="birthday != null and birthday != ''">
+                BIRTHDAY,
+            </if>
+            <if test="nationality != null and nationality != ''">
+                NATIONALITY,
+            </if>
+            <if test="political != null and political != ''">
+                POLITICAL,
+            </if>
+            <if test="regResidence != null and regResidence != ''">
+                REG_RESIDENCE,
+            </if>
+            <if test="nativePlace != null and nativePlace != ''">
+                NATIVE_PLACE,
+            </if>
+            <if test="phone != null and phone != ''">
+                PHONE,
+            </if>
+            <if test="permanentAddress != null and permanentAddress != ''">
+                PERMANENT_ADDRESS,
+            </if>
+            <if test="address != null and address != ''">
+                ADDRESS,
+            </if>
+            <if test="emergencyContact != null and emergencyContact != ''">
+                EMERGENCY_CONTACT,
+            </if>
+            <if test="emergencyPhone != null and emergencyPhone != ''">
+                EMERGENCY_PHONE,
+            </if>
+            <if test="contractAttribute != null and contractAttribute != ''">
+                CONTRACT_ATTRIBUTE,
+            </if>
+            <if test="contractPeriod != null and contractPeriod != ''">
+                CONTRACT_PERIOD,
+            </if>
+            <if test="subscript1 != null and subscript1 != ''">
+                SUBSCRIPT_1,
+            </if>
+            <if test="subscript2 != null and subscript2 != ''">
+                SUBSCRIPT_2,
+            </if>
+            <if test="subscript3 != null and subscript3 != ''">
+                SUBSCRIPT_3,
+            </if>
+            <if test="subscript4 != null and subscript4 != ''">
+                SUBSCRIPT_4,
+            </if>
+            <if test="accName != null and accName != ''">
+                ACC_NAME,
+            </if>
+            <if test="accPwd != null and accPwd != ''">
+                ACC_PWD,
+            </if>
+            <if test="deptId != null and deptId != ''">
+                DEPT_ID,
+            </if>
+            <if test="posId != null and posId != ''">
+                POS_ID,
+            </if>
+            <if test="entryDate != null and entryDate != ''">
+                ENTRY_DATE,
+            </if>
+            <if test="formalDate != null and formalDate != ''">
+                FORMAL_DATE,
+            </if>
+            <if test="leavelDate != null and leavelDate != ''">
+                LEAVEL_DATE,
+            </if>
+            <if test="state != null and state != ''">
+                STATE,
+            </if>
+            <if test="openId != null and openId != ''">
+                OPEN_ID,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="empName != null and empName != ''">
+                #{empName} ,
+            </if>
+            <if test="sex != null and sex != ''">
+                #{sex},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                #{idCard},
+            </if>
+            <if test="birthday != null and birthday != ''">
+                #{birthday},
+            </if>
+            <if test="nationality != null and nationality != ''">
+                #{nationality},
+            </if>
+            <if test="political != null and political != ''">
+                #{political},
+            </if>
+            <if test="regResidence != null and regResidence != ''">
+                #{regResidence},
+            </if>
+            <if test="nativePlace != null and nativePlace != ''">
+                #{nativePlace},
+            </if>
+            <if test="phone != null and phone != ''">
+                #{phone},
+            </if>
+            <if test="permanentAddress != null and permanentAddress != ''">
+                #{permanentAddress},
+            </if>
+            <if test="address != null and address != ''">
+                #{address},
+            </if>
+            <if test="emergencyContact != null and emergencyContact != ''">
+                #{emergencyContact},
+            </if>
+            <if test="emergencyPhone != null and emergencyPhone != ''">
+                #{emergencyPhone},
+            </if>
+            <if test="contractAttribute != null and contractAttribute != ''">
+                #{contractAttribute},
+            </if>
+            <if test="contractPeriod != null and contractPeriod != ''">
+                #{contractPeriod},
+            </if>
+            <if test="subscript1 != null and subscript1 != ''">
+                #{subscript1},
+            </if>
+            <if test="subscript2 != null and subscript2 != ''">
+                #{subscript2},
+            </if>
+            <if test="subscript3 != null and subscript3 != ''">
+                #{subscript3},
+            </if>
+            <if test="subscript4 != null and subscript4 != ''">
+                #{subscript4},
+            </if>
+            <if test="accName != null and accName != ''">
+                #{accName},
+            </if>
+            <if test="accPwd != null and accPwd != ''">
+                #{accPwd},
+            </if>
+            <if test="deptId != null and deptId != ''">
+                #{deptId},
+            </if>
+            <if test="posId != null and posId != ''">
+                #{posId},
+            </if>
+            <if test="entryDate != null and entryDate != ''">
+                #{entryDate},
+            </if>
+            <if test="formalDate != null and formalDate != ''">
+                #{formalDate},
+            </if>
+            <if test="leavelDate != null and leavelDate != ''">
+                #{leavelDate},
+            </if>
+            <if test="state != null and state != ''">
+                #{state},
+            </if>
+            <if test="openId != null and openId != ''">
+                #{openId},
+            </if>
+        </trim>
+    </insert>
 </mapper>
+

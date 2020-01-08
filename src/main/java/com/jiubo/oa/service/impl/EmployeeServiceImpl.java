@@ -53,6 +53,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void addEmployee(EmployeeBean employeeBean) throws Exception {
+        employeeBean.setState("1");
+        if(employeeDao.addEmployee(employeeBean)<=0)throw new MessageException("添加失败");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void bindOpenId(EmployeeBean employeeBean) throws Exception {
         if (StringUtils.isBlank(employeeBean.getAccName())) throw new MessageException("账号不能为空!");
         if (StringUtils.isBlank(employeeBean.getAccPwd())) throw new MessageException("密码不能为空!");
