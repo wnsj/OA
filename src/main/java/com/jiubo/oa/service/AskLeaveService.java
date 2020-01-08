@@ -30,4 +30,7 @@ public interface AskLeaveService extends IService<AskLeaveBean> {
 
     //查询未处理的申请
     public List<AskLeaveBean> queryUntreatedAskLeave(AskLeaveBean askLeaveBean);
+
+    //查询未处理的申请
+    public List<AskLeaveBean> queryUntreatedApply(AskLeaveBean askLeaveBean) throws Exception;
 }

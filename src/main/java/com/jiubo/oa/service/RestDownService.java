@@ -29,6 +29,6 @@ public interface RestDownService extends IService<RestDownBean> {
     //取消，修改，审核倒休
     public void operationRestDown(RestDownBean restDownBean) throws Exception;
 
-    //查询未处理的倒休申请
+    //查询未处理的倒休申请（暂不使用）
     public List<RestDownBean> queryUntreatedRestDown(RestDownBean restDownBean) throws Exception;
 }

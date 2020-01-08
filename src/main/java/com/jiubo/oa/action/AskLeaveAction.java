@@ -72,4 +72,16 @@ public class AskLeaveAction {
         jsonObject.put(Constant.Result.RETDATA, askLeaveService.queryUntreatedAskLeave(askLeaveBean));
         return jsonObject;
     }
+
+    //查询未处理的申请
+    @PostMapping(value = "/queryUntreatedApply")
+    public JSONObject queryUntreatedApply(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        AskLeaveBean askLeaveBean = JSONObject.parseObject(params, AskLeaveBean.class);
+        jsonObject.put(Constant.Result.RETDATA, askLeaveService.queryUntreatedApply(askLeaveBean));
+        return jsonObject;
+    }
 }

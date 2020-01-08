@@ -42,12 +42,16 @@
         <if test="state != null and state != ''">
             AND A.STATE = #{state}
         </if>
-        <if test="createBegDate != null and createBegDate != '' and createEndDate != null and createEndDate != ''">
+        <if test="createBegDate != null and createBegDate != '' ">
             AND A.CREATE_DATE >= #{createBegDate}
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
             AND A.CREATE_DATE &lt; #{createEndDate}
         </if>
-        <if test="qBegDate != null and qBegDate != '' and qEndDate != null and qEndDate != ''">
+        <if test="qBegDate != null and qBegDate != ''">
             AND A.BEG_DATE >= #{qBegDate}
+        </if>
+        <if test="qEndDate != null and qEndDate != ''">
             AND A.END_DATE &lt; #{qEndDate}
         </if>
 
@@ -156,146 +160,247 @@
         WHERE AL_ID = #{alId}
     </update>
 
+    <!--    查询未处理的申请-->
     <select id="queryUntreatedAskLeave" resultType="com.jiubo.oa.bean.AskLeaveBean">
         SELECT *
         FROM (
-                 SELECT A.AL_ID,
-                        A.LT_ID,
-                        A.EMP_ID,
-                        A.CREATE_DATE,
-                        A.BEG_DATE,
-                        A.END_DATE,
-                        A.REMARK,
-                        A.BILL,
-                        A.STATE,
-                        A.EXAMINER,
-                        A.EXAMINER_ADV,
-                        A.EXAMINER_DATE,
-                        A.AUDITOR,
-                        A.AUDITOR_ADV,
-                        A.AUDITOR_DATE,
-                        A.APPROVER,
-                        A.APPROVER_ADV,
-                        A.APPROVER_DATE,
-                        E.EMP_NAME,
-                        EM.EMP_NAME  EXAMINER_NAME,
-                        EMP.EMP_NAME AUDITOR_NAME,
-                        EMPL.EMP_NAME
-                                     APPROVER_NAME,
-                        LT.LT_NAME,
-                        D.DEPT_ID,
-                        D.DEPT_NAME
-                 FROM ASK_LEAVE A
-                          LEFT JOIN EMPLOYEE E
-                                    ON A.EMP_ID = E.EMP_ID
-                          LEFT JOIN DEPARTMENT D
-                                    ON D.DEPT_ID = E.DEPT_ID
-                          LEFT JOIN EMPLOYEE EM
-                                    ON EM.EMP_ID = A.EXAMINER
-                          LEFT JOIN EMPLOYEE EMP
-                                    ON EMP.EMP_ID = A.AUDITOR
-                          LEFT JOIN EMPLOYEE EMPL
-                                    ON EMPL.EMP_ID = A.APPROVER
-                          LEFT JOIN LEAVE_TYPE LT
-                                    ON LT.LT_ID = A.LT_ID
-                 WHERE A.EXAMINER_ADV = 0
-                   AND A.STATE = 0
-                   AND A.EXAMINER = #{empId}
-                 UNION
+        SELECT A.AL_ID,
+        A.LT_ID,
+        A.EMP_ID,
+        A.CREATE_DATE,
+        A.BEG_DATE,
+        A.END_DATE,
+        A.REMARK,
+        A.BILL,
+        A.STATE,
+        A.EXAMINER,
+        A.EXAMINER_ADV,
+        A.EXAMINER_DATE,
+        A.AUDITOR,
+        A.AUDITOR_ADV,
+        A.AUDITOR_DATE,
+        A.APPROVER,
+        A.APPROVER_ADV,
+        A.APPROVER_DATE,
+        E.EMP_NAME,
+        EM.EMP_NAME EXAMINER_NAME,
+        EMP.EMP_NAME AUDITOR_NAME,
+        EMPL.EMP_NAME
+        APPROVER_NAME,
+        LT.LT_NAME,
+        D.DEPT_ID,
+        D.DEPT_NAME
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON D.DEPT_ID = E.DEPT_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = A.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = A.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = A.APPROVER
+        LEFT JOIN LEAVE_TYPE LT
+        ON LT.LT_ID = A.LT_ID
+        WHERE A.EXAMINER_ADV = 0
+        AND A.STATE = 0
+        AND A.EXAMINER = #{empId}
+        UNION
 
-                 SELECT A.AL_ID,
-                        A.LT_ID,
-                        A.EMP_ID,
-                        A.CREATE_DATE,
-                        A.BEG_DATE,
-                        A.END_DATE,
-                        A.REMARK,
-                        A.BILL,
-                        A.STATE,
-                        A.EXAMINER,
-                        A.EXAMINER_ADV,
-                        A.EXAMINER_DATE,
-                        A.AUDITOR,
-                        A.AUDITOR_ADV,
-                        A.AUDITOR_DATE,
-                        A.APPROVER,
-                        A.APPROVER_ADV,
-                        A.APPROVER_DATE,
-                        E.EMP_NAME,
-                        EM.EMP_NAME  EXAMINER_NAME,
-                        EMP.EMP_NAME AUDITOR_NAME,
-                        EMPL.EMP_NAME
-                                     APPROVER_NAME,
-                        LT.LT_NAME,
-                        D.DEPT_ID,
-                        D.DEPT_NAME
-                 FROM ASK_LEAVE A
-                          LEFT JOIN EMPLOYEE E
-                                    ON A.EMP_ID = E.EMP_ID
-                          LEFT JOIN DEPARTMENT D
-                                    ON D.DEPT_ID = E.DEPT_ID
-                          LEFT JOIN EMPLOYEE EM
-                                    ON EM.EMP_ID = A.EXAMINER
-                          LEFT JOIN EMPLOYEE EMP
-                                    ON EMP.EMP_ID = A.AUDITOR
-                          LEFT JOIN EMPLOYEE EMPL
-                                    ON EMPL.EMP_ID = A.APPROVER
-                          LEFT JOIN LEAVE_TYPE LT
-                                    ON LT.LT_ID = A.LT_ID
-                 WHERE A.EXAMINER_ADV = 1
-                   AND A.AUDITOR = #{empId}
-                   AND A.AUDITOR_ADV = 0
-                   AND A.STATE = 0
-                 UNION
+        SELECT A.AL_ID,
+        A.LT_ID,
+        A.EMP_ID,
+        A.CREATE_DATE,
+        A.BEG_DATE,
+        A.END_DATE,
+        A.REMARK,
+        A.BILL,
+        A.STATE,
+        A.EXAMINER,
+        A.EXAMINER_ADV,
+        A.EXAMINER_DATE,
+        A.AUDITOR,
+        A.AUDITOR_ADV,
+        A.AUDITOR_DATE,
+        A.APPROVER,
+        A.APPROVER_ADV,
+        A.APPROVER_DATE,
+        E.EMP_NAME,
+        EM.EMP_NAME EXAMINER_NAME,
+        EMP.EMP_NAME AUDITOR_NAME,
+        EMPL.EMP_NAME
+        APPROVER_NAME,
+        LT.LT_NAME,
+        D.DEPT_ID,
+        D.DEPT_NAME
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON D.DEPT_ID = E.DEPT_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = A.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = A.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = A.APPROVER
+        LEFT JOIN LEAVE_TYPE LT
+        ON LT.LT_ID = A.LT_ID
+        WHERE A.EXAMINER_ADV = 1
+        AND A.AUDITOR = #{empId}
+        AND A.AUDITOR_ADV = 0
+        AND A.STATE = 0
+        UNION
 
-                 SELECT A.AL_ID,
-                        A.LT_ID,
-                        A.EMP_ID,
-                        A.CREATE_DATE,
-                        A.BEG_DATE,
-                        A.END_DATE,
-                        A.REMARK,
-                        A.BILL,
-                        A.STATE,
-                        A.EXAMINER,
-                        A.EXAMINER_ADV,
-                        A.EXAMINER_DATE,
-                        A.AUDITOR,
-                        A.AUDITOR_ADV,
-                        A.AUDITOR_DATE,
-                        A.APPROVER,
-                        A.APPROVER_ADV,
-                        A.APPROVER_DATE,
-                        E.EMP_NAME,
-                        EM.EMP_NAME  EXAMINER_NAME,
-                        EMP.EMP_NAME AUDITOR_NAME,
-                        EMPL.EMP_NAME
-                                     APPROVER_NAME,
-                        LT.LT_NAME,
-                        D.DEPT_ID,
-                        D.DEPT_NAME
-                 FROM ASK_LEAVE A
-                          LEFT JOIN EMPLOYEE E
-                                    ON A.EMP_ID = E.EMP_ID
-                          LEFT JOIN DEPARTMENT D
-                                    ON D.DEPT_ID = E.DEPT_ID
-                          LEFT JOIN EMPLOYEE EM
-                                    ON EM.EMP_ID = A.EXAMINER
-                          LEFT JOIN EMPLOYEE EMP
-                                    ON EMP.EMP_ID = A.AUDITOR
-                          LEFT JOIN EMPLOYEE EMPL
-                                    ON EMPL.EMP_ID = A.APPROVER
-                          LEFT JOIN LEAVE_TYPE LT
-                                    ON LT.LT_ID = A.LT_ID
-                 WHERE A.EXAMINER_ADV = 1
-                   AND A.AUDITOR_ADV = 1
-                   AND A.APPROVER = #{empId}
-                   AND A.APPROVER_ADV = 0
-                   AND A.STATE = 0
-             ) A
+        SELECT A.AL_ID,
+        A.LT_ID,
+        A.EMP_ID,
+        A.CREATE_DATE,
+        A.BEG_DATE,
+        A.END_DATE,
+        A.REMARK,
+        A.BILL,
+        A.STATE,
+        A.EXAMINER,
+        A.EXAMINER_ADV,
+        A.EXAMINER_DATE,
+        A.AUDITOR,
+        A.AUDITOR_ADV,
+        A.AUDITOR_DATE,
+        A.APPROVER,
+        A.APPROVER_ADV,
+        A.APPROVER_DATE,
+        E.EMP_NAME,
+        EM.EMP_NAME EXAMINER_NAME,
+        EMP.EMP_NAME AUDITOR_NAME,
+        EMPL.EMP_NAME
+        APPROVER_NAME,
+        LT.LT_NAME,
+        D.DEPT_ID,
+        D.DEPT_NAME
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON D.DEPT_ID = E.DEPT_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = A.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = A.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = A.APPROVER
+        LEFT JOIN LEAVE_TYPE LT
+        ON LT.LT_ID = A.LT_ID
+        WHERE A.EXAMINER_ADV = 1
+        AND A.AUDITOR_ADV = 1
+        AND A.APPROVER = #{empId}
+        AND A.APPROVER_ADV = 0
+        AND A.STATE = 0
+        ) A
         WHERE 1 = 1
         <if test="alId != null and alId != ''">
             AND A.AL_ID != #{alId}
+        </if>
+    </select>
+
+    <!--    查询未处理的申请-->
+    <select id="queryUntreatedApply" resultType="com.jiubo.oa.bean.AskLeaveBean">
+        SELECT A.AL_ID, A.LT_ID, LT.LT_NAME, A.EMP_ID, E.EMP_NAME, A.CREATE_DATE, '1' AS BILL
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN LEAVE_TYPE LT
+        ON A.LT_ID = LT.LT_ID
+        WHERE A.EXAMINER_ADV = 0
+        AND A.STATE = 0
+        AND A.EXAMINER = #{empId}
+        <if test="alId != null and alId != ''">
+            AND A.AL_ID != #{alId}
+        </if>
+
+        UNION
+
+        SELECT A.AL_ID, A.LT_ID, LT.LT_NAME, A.EMP_ID, E.EMP_NAME, A.CREATE_DATE, '1' AS BILL
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN LEAVE_TYPE LT
+        ON A.LT_ID = LT.LT_ID
+        WHERE A.EXAMINER_ADV = 1
+        AND A.AUDITOR = #{empId}
+        AND A.AUDITOR_ADV = 0
+        AND A.STATE = 0
+        <if test="alId != null and alId != ''">
+            AND A.AL_ID != #{alId}
+        </if>
+
+        UNION
+
+        SELECT A.AL_ID, A.LT_ID, LT.LT_NAME, A.EMP_ID, E.EMP_NAME, A.CREATE_DATE, '1' AS BILL
+        FROM ASK_LEAVE A
+        LEFT JOIN EMPLOYEE E
+        ON A.EMP_ID = E.EMP_ID
+        LEFT JOIN LEAVE_TYPE LT
+        ON A.LT_ID = LT.LT_ID
+        WHERE A.EXAMINER_ADV = 1
+        AND A.AUDITOR_ADV = 1
+        AND A.APPROVER = #{empId}
+        AND A.APPROVER_ADV = 0
+        AND A.STATE = 0
+        <if test="alId != null and alId != ''">
+            AND A.AL_ID != #{alId}
+        </if>
+
+        UNION
+
+        SELECT RD.RD_ID AS AL_ID,RD.REA_ID AS LT_ID,RR.REA_NAME AS LT_NAME, RD.EMP_ID,E.EMP_NAME,RD.CREATE_DATE,'2' AS
+        BILL
+        FROM REST_DOWN RD
+        LEFT JOIN EMPLOYEE E
+        ON RD.EMP_ID = E.EMP_ID
+        LEFT JOIN REST_REASON RR
+        ON RR.REA_ID = RD.REA_ID
+        WHERE RD.EXAMINER_ADV = 0
+        AND RD.STATE = 0
+        AND RD.EXAMINER = #{empId}
+        <if test="rdId != null and rdId != ''">
+            AND RD.RD_ID != #{rdId}
+        </if>
+
+        UNION
+
+        SELECT RD.RD_ID AS AL_ID,RD.REA_ID AS LT_ID,RR.REA_NAME AS LT_NAME, RD.EMP_ID,E.EMP_NAME,RD.CREATE_DATE,'2' AS
+        BILL
+        FROM REST_DOWN RD
+        LEFT JOIN EMPLOYEE E
+        ON RD.EMP_ID = E.EMP_ID
+        LEFT JOIN REST_REASON RR
+        ON RR.REA_ID = RD.REA_ID
+        WHERE RD.EXAMINER_ADV = 1
+        AND RD.AUDITOR = #{empId}
+        AND RD.AUDITOR_ADV = 0
+        AND RD.STATE = 0
+        <if test="rdId != null and rdId != ''">
+            AND RD.RD_ID != #{rdId}
+        </if>
+
+        UNION
+
+        SELECT RD.RD_ID AS AL_ID,RD.REA_ID AS LT_ID,RR.REA_NAME AS LT_NAME, RD.EMP_ID,E.EMP_NAME,RD.CREATE_DATE,'2' AS
+        BILL
+        FROM REST_DOWN RD
+        LEFT JOIN EMPLOYEE E
+        ON RD.EMP_ID = E.EMP_ID
+        LEFT JOIN REST_REASON RR
+        ON RR.REA_ID = RD.REA_ID
+        WHERE RD.EXAMINER_ADV = 1
+        AND RD.AUDITOR_ADV = 1
+        AND RD.APPROVER = #{empId}
+        AND RD.APPROVER_ADV = 0
+        AND RD.STATE = 0
+        <if test="rdId != null and rdId != ''">
+            AND RD.RD_ID != #{rdId}
         </if>
     </select>
 </mapper>

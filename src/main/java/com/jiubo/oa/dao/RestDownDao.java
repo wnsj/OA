@@ -22,6 +22,6 @@ public interface RestDownDao extends BaseMapper<RestDownBean> {
     //修改倒休
     public int updateRestDown(RestDownBean restDownBean);
 
-    //查询未处理的倒休申请
+    //查询未处理的倒休申请（暂不使用）
     public List<RestDownBean> queryUntreatedRestDown(RestDownBean restDownBean);
 }

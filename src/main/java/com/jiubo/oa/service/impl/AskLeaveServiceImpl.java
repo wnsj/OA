@@ -126,7 +126,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             data = new JSONObject();
 
             JSONObject content = new JSONObject();
-            content.put("value", flag ? "您已成功申请" + leaveTypeBean.getLtName() + ",请等待审核!" : "您已修改成功,请等待审核!");
+            content.put("value", flag ? "您已成功申请" + leaveTypeBean.getLtName() + ",请等待审核!" : "您已成功修改请假申请,请等待审核!");
             content.put("color", "#173177");
             data.put("first", content);
 
@@ -150,7 +150,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
 
             //备注
             content = new JSONObject();
-            content.put("value", flag ? "您已成功申请" + leaveTypeBean.getLtName() + ",请等待审核!" : "您已修改成功,请等待审核!");
+            content.put("value", flag ? "您已成功申请" + leaveTypeBean.getLtName() + ",请等待审核!" : "您已成功修改请假申请,请等待审核!");
             content.put("color", "#173177");
             data.put("remark", content);
 
@@ -217,6 +217,11 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
     @Override
     public List<AskLeaveBean> queryUntreatedAskLeave(AskLeaveBean askLeaveBean) {
         return askLeaveDao.queryUntreatedAskLeave(askLeaveBean);
+    }
+
+    @Override
+    public List<AskLeaveBean> queryUntreatedApply(AskLeaveBean askLeaveBean) throws Exception {
+        return askLeaveDao.queryUntreatedApply(askLeaveBean);
     }
 
     //取消，审核申请
@@ -474,7 +479,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 data = new JSONObject();
 
                 JSONObject content = new JSONObject();
-                content.put("value", result + "审核!");
+                content.put("value", "您申请的请假申请" + result + "审核!");
                 content.put("color", "#173177");
                 data.put("first", content);
 
@@ -498,7 +503,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
 
                 //备注
                 content = new JSONObject();
-                content.put("value", "2".equals(askLeaveBean.getApproverAdv()) ? "审核未通过，点击查看详情!" : "已通过");
+                content.put("value", "2".equals(askLeaveBean.getApproverAdv()) ? "您申请的请假申请审核未通过，点击查看详情!" : "您申请的请假申请已通过");
                 content.put("color", "#173177");
                 data.put("remark", content);
 

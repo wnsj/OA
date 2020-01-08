@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.RestReasonDao">
+
+    <!--    查询倒休原因-->
+    <select id="queryRestReason" resultType="com.jiubo.oa.bean.RestReasonBean">
+        SELECT REA_ID, REA_NAME, ISUSE, CREATE_DATE
+        FROM REST_REASON
+        WHERE 1 = 1
+        <if test="reaId != null and reaId != ''">
+            AND REA_ID = #{reaId}
+        </if>
+    </select>
+</mapper>

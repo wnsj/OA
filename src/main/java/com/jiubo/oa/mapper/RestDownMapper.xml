@@ -65,16 +65,22 @@
         <if test="deptId != null and deptId != ''">
             AND E.DEPT_ID = #{deptId}
         </if>
-        <if test="createBegDate != null and createBegDate != '' and createEndDate != null and createEndDate != ''">
+        <if test="createBegDate != null and createBegDate != ''">
             AND R.CREATE_DATE >= #{createBegDate}
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
             AND R.CREATE_DATE &lt; #{createEndDate}
         </if>
-        <if test="overtimeBeg != null and overtimeBeg != '' and overtimeEnd != null and overtimeEnd != ''">
+        <if test="overtimeBeg != null and overtimeBeg != '' ">
             AND R.OVERTIME_BEG >= #{overtimeBeg}
+        </if>
+        <if test="overtimeEnd != null and overtimeEnd != ''">
             AND R.OVERTIME_END &lt; #{overtimeEnd}
         </if>
-        <if test="restDateBeg != null and restDateBeg != '' and restDateEnd != null and restDateEnd != ''">
+        <if test="restDateBeg != null and restDateBeg != ''">
             AND R.REST_DATE_BEG >= #{restDateBeg}
+        </if>
+        <if test="restDateEnd != null and restDateEnd != ''">
             AND R.REST_DATE_END &lt; #{restDateEnd}
         </if>
         <if test="advState != null and advState != ''">

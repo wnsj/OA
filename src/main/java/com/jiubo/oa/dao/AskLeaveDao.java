@@ -24,4 +24,7 @@ public interface AskLeaveDao extends BaseMapper<AskLeaveBean> {
 
     //查询未处理的申请
     public List<AskLeaveBean> queryUntreatedAskLeave(AskLeaveBean askLeaveBean);
+
+    //查询未处理的申请
+    public List<AskLeaveBean> queryUntreatedApply(AskLeaveBean askLeaveBean);
 }
