@@ -3,6 +3,7 @@ package com.jiubo.oa.service;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jiubo.oa.bean.EmployeeBean;
+import com.jiubo.oa.exception.MessageException;
 
 import java.util.List;
 
@@ -25,4 +26,7 @@ public interface EmployeeService extends IService<EmployeeBean> {
 
     //修改
     public void updateEmployee(EmployeeBean employeeBean) throws Exception;
+
+    //新增员工基本信息
+    void addEmployee(EmployeeBean employeeBean) throws MessageException, Exception;
 }

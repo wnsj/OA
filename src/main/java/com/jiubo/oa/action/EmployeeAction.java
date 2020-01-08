@@ -62,4 +62,28 @@ public class EmployeeAction {
     }
 
 
+    //新增员工基本信息
+    @PostMapping(value = "/addEmployee")
+    public JSONObject addEmployee(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        employeeService.addEmployee(employeeBean);
+        return jsonObject;
+    }
+
+
+    //新增员工基本信息
+    @PostMapping(value = "/updateEmployee")
+    public JSONObject updateEmployee(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        employeeService.updateEmployee(employeeBean);
+        return jsonObject;
+    }
 }
