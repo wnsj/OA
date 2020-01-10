@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.ForgetCardDao">
+
+    <!--    查询请假类型-->
+    <select id="queryForgetCard" resultType="com.jiubo.oa.bean.ForgetCardBean">
+        SELECT FC.FC_ID, FC.EMP_ID, FC.FCR_ID, FC.FORGET_DATE, FC.CREATE_DATE,FC.REMARK, FC.STATE, FC.WITNESS,
+        FC.WITNESS_REMARK,
+        FC.EXAMINER, FC.EXAMINER_ADV, FC.EXAMINER_REMARK, FC.EXAMINER_DATE, FC.AUDITOR, FC.AUDITOR_ADV,
+        FC.AUDITOR_REMARK, FC.AUDITOR_DATE, FC.APPROVER, FC.APPROVER_ADV, FC.APPROVER_REMARK, FC.APPROVER_DATE,
+        E.EMP_NAME,D.DEPT_ID,D.DEPT_NAME,P.POS_ID,P.POS_NAME,EMPEE.EMP_NAME WITNESSNAME, EM.EMP_NAME EXAMINERNAME,
+        EMP.EMP_NAME AUDITORNAME,EMPL.EMP_NAME APPROVERNAME,FCR.FCR_NAME
+        FROM FORGET_CARD FC
+        LEFT JOIN EMPLOYEE E
+        ON FC.EMP_ID = E.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EMPEE
+        ON EMPEE.EMP_ID = FC.WITNESS
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = FC.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = FC.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = FC.APPROVER
+        LEFT JOIN FORGET_CARD_REASON FCR
+        ON FCR.FCR_ID = FC.FCR_ID
+        WHERE 1 = 1
+        <if test="fcId != null and fcId != ''">
+            AND FC.FC_ID = #{fcId}
+        </if>
+        <if test="empName != null and empName != ''">
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+        </if>
+        <if test="deptId != null and deptId != ''">
+            AND E.DEPT_ID = #{deptId}
+        </if>
+        <if test="createBegDate != null and createBegDate != ''">
+            AND FC.CREATE_DATE >= #{createBegDate}
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
+            AND FC.CREATE_DATE &lt; #{createEndDate}
+        </if>
+        <if test="forgetDateBeg != null and forgetDateBeg != ''">
+            AND FC.FORGET_DATE >= #{forgetDateBeg}
+        </if>
+        <if test="forgetDateEnd != null and forgetDateEnd != ''">
+            AND FC.FORGET_DATE &lt; #{forgetDateEnd}
+        </if>
+        <if test="advState != null and advState != ''">
+            <choose>
+                <when test="advState == 0"></when>
+                <when test="advState == 1">
+                    AND FC.STATE != 1
+                    AND FC.APPROVER_ADV != 1
+                    AND FC.EXAMINER_ADV != 2
+                    AND FC.AUDITOR_ADV != 2
+                    AND FC.APPROVER_ADV != 2
+                    AND (
+                    FC.EXAMINER_ADV = 0 OR FC.EXAMINER_ADV = 1
+                    OR FC.AUDITOR_ADV = 0 OR FC.AUDITOR_ADV = 1
+                    )
+                </when>
+                <when test="advState == 2">
+                    AND FC.STATE != 1
+                    AND FC.APPROVER_ADV = 1
+                </when>
+                <when test="advState == 3">
+                    AND FC.STATE != 1
+                    AND (
+                    FC.EXAMINER_ADV = 2
+                    OR FC.AUDITOR_ADV = 2
+                    OR FC.APPROVER_ADV = 2
+                    )
+                </when>
+                <when test="advState == 4">
+                    AND FC.STATE = 1
+                </when>
+            </choose>
+        </if>
+        ORDER BY FC.FC_ID
+    </select>
+
+    <!--    添加忘记打卡-->
+    <insert id="addForgetCard" useGeneratedKeys="true" keyProperty="fcId">
+        INSERT INTO FORGET_CARD (FC_ID, EMP_ID, FCR_ID, FORGET_DATE, REMARK,
+                                 CREATE_DATE, STATE, WITNESS, WITNESS_REMARK, EXAMINER,
+                                 EXAMINER_ADV, EXAMINER_REMARK, EXAMINER_DATE, AUDITOR, AUDITOR_ADV,
+                                 AUDITOR_REMARK, AUDITOR_DATE, APPROVER, APPROVER_ADV, APPROVER_REMARK, APPROVER_DATE)
+        VALUES (#{fcId}, #{empId}, #{fcrId}, #{forgetDate}, #{remark},
+                #{createDate}, #{state}, #{witness}, #{witnessRemark}, #{examiner},
+                #{examinerAdv}, #{examinerRemark}, #{examinerDate}, #{auditor}, #{auditorAdv},
+                #{auditorRemark}, #{auditorDate}, #{approver}, #{approverAdv}, #{approverRemark}, #{approverDate})
+    </insert>
+
+    <!--    修改忘记打卡-->
+    <update id="updateForgetCard">
+        UPDATE FORGET_CARD
+        SET
+        <trim suffixOverrides=",">
+            <if test="empId != null and empId != ''">
+                EMP_ID = #{empId},
+            </if>
+            <if test="fcrId != null and fcrId != ''">
+                FCR_ID = #{fcrId},
+            </if>
+            <if test="forgetDate != null and forgetDate != ''">
+                FORGET_DATE = #{forgetDate},
+            </if>
+            <if test="remark != null and remark != ''">
+                REMARK = #{remark},
+            </if>
+            <if test="createDate != null and createDate != ''">
+                CREATE_DATE = #{createDate},
+            </if>
+            <if test="state != null and state != ''">
+                STATE = #{state},
+            </if>
+            <if test="witness != null and witness != ''">
+                WITNESS = #{witness},
+            </if>
+            <if test="witnessRemark != null and witnessRemark != ''">
+                WITNESS_REMARK = #{witnessRemark},
+            </if>
+            <if test="examiner != null and examiner != ''">
+                EXAMINER = #{examiner},
+            </if>
+            <if test="examinerAdv != null and examinerAdv != ''">
+                EXAMINER_ADV = #{examinerAdv},
+            </if>
+            <if test="examinerRemark != null and examinerRemark != ''">
+                EXAMINER_REMARK = #{examinerRemark},
+            </if>
+            <if test="examinerDate != null and examinerDate != ''">
+                EXAMINER_DATE = #{examinerDate},
+            </if>
+            <if test="auditor != null and auditor != ''">
+                AUDITOR = #{auditor},
+            </if>
+            <if test="auditorAdv != null and auditorAdv != ''">
+                AUDITOR_ADV = #{auditorAdv},
+            </if>
+            <if test="auditorRemark != null and auditorRemark != ''">
+                AUDITOR_REMARK = #{auditorRemark},
+            </if>
+            <if test="auditorDate != null auditorDateand != ''">
+                AUDITOR_DATE = #{auditorDate},
+            </if>
+            <if test="approver != null and approver != ''">
+                APPROVER = #{approver},
+            </if>
+            <if test="approverAdv != null and approverAdv != ''">
+                APPROVER_ADV = #{approverAdv},
+            </if>
+            <if test="approverRemark != null and approverRemark != ''">
+                APPROVER_REMARK = #{approverRemark},
+            </if>
+            <if test="approverDate != null and approverDate != ''">
+                APPROVER_DATE = #{approverDate},
+            </if>
+        </trim>
+        WHERE FC_ID = #{fcId}
+    </update>
+</mapper>

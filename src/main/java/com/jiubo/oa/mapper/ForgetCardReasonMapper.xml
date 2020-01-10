@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.ForgetCardReasonDao">
+
+    <!--    查询请假类型-->
+    <select id="queryForgetCardReason" resultType="com.jiubo.oa.bean.ForgetCardReasonBean">
+        SELECT FCR_ID, FCR_NAME, ISUSE, CREATE_DATE
+        FROM FORGET_CARD_REASON
+        WHERE 1 = 1
+        <if test="fcrId != null and fcrId != ''">
+            AND FCR_ID = #{fcrId}
+        </if>
+    </select>
+</mapper>
