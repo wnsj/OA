@@ -194,7 +194,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
 
             //备注
             content = new JSONObject();
-            content.put("value", "有新的假期申请需要审核,点击查看详情!");
+            content.put("value", "有新的请假申请需要审核,点击查看详情!");
             content.put("color", "#173177");
             data.put("remark", content);
 
