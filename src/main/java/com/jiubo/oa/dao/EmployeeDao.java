@@ -1,6 +1,7 @@
 package com.jiubo.oa.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jiubo.oa.bean.EmpShiftBean;
 import com.jiubo.oa.bean.EmployeeBean;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface EmployeeDao extends BaseMapper<EmployeeBean> {
 
     //修改员工
     public int updateEmployee(EmployeeBean employeeBean);
+
+    //岗位调动
+    int postTransfer(EmpShiftBean empShiftBean);
 }

@@ -1,6 +1,7 @@
 package com.jiubo.oa.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jiubo.oa.bean.EmpShiftBean;
 import com.jiubo.oa.bean.EmployeeBean;
 import com.jiubo.oa.common.Constant;
 import com.jiubo.oa.exception.MessageException;
@@ -75,7 +76,7 @@ public class EmployeeAction {
     }
 
 
-    //新增员工基本信息
+    //修改员工基本信息
     @PostMapping(value = "/updateEmployee")
     public JSONObject updateEmployee(@RequestBody String params) throws Exception {
         if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
@@ -84,6 +85,30 @@ public class EmployeeAction {
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
         EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
         employeeService.updateEmployee(employeeBean);
+        return jsonObject;
+    }
+
+    //岗位调动
+    @PostMapping(value = "/postTransfer")
+    public JSONObject postTransfer(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmpShiftBean empShiftBean = JSONObject.parseObject(params, EmpShiftBean.class);
+        employeeService.postTransfer(empShiftBean);
+        return jsonObject;
+    }
+
+    //根据empId查询员工基本信息，学历信息，员工家庭信息，员工岗位调动
+    @PostMapping(value = "/queryAllByEmpId")
+    public JSONObject queryAllByEmpId(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        jsonObject.put(Constant.Result.RETDATA, employeeService.queryAllByEmpId(employeeBean.getEmpId()));
         return jsonObject;
     }
 }

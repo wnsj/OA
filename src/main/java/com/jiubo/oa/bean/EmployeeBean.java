@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @desc:员工Bean
@@ -36,6 +37,9 @@ public class EmployeeBean implements Serializable {
 
     //民族
     private String nationality;
+
+    //名族名
+    private String natName;
 
     //政治面貌
     private String political;
@@ -117,4 +121,14 @@ public class EmployeeBean implements Serializable {
 
     //是否显示密码
     private String showPwd;
+
+
+    //==================学历信息====================
+    private EmpEducationBean empEducationBean;
+
+    //==================家庭信息====================
+    private List<EmpFamilyBean> empFamilyList;
+
+    //==================岗位调动===========================
+    private List<EmpShiftBean> empShiftBeanList;
 }
