@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.EmpEducationDao">
+
+    <!--添加员工学历信息-->
+    <insert id="addEmpEducation" useGeneratedKeys="true" keyProperty="educatId">
+        INSERT INTO `emp_education`
+        (`EMP_ID`, `EDU_ID`, `GRADUATE_DATE`, `SCHOOL`, `PROFESSIONAL`, `PROFESSION`, `CERTIFICATION`)
+        VALUES
+        ( #{empId}, #{eduId}, #{graduateDate}, #{school}, #{professional}, #{profession}, #{certification})
+    </insert>
+
+    <!--根据id修改员工学历信息-->
+    <update id="updateByEducatId">
+        UPDATE `emp_education`
+        SET
+        `EMP_ID` = #{empId},
+        `EDU_ID` = #{eduId},
+        `GRADUATE_DATE` = #{graduateDate},
+        `SCHOOL` = #{school},
+        `PROFESSIONAL` = #{professional},
+        `PROFESSION` = #{profession},
+        `CERTIFICATION` = #{certification}
+        WHERE `EDUCAT_ID` = #{educatId}
+    </update>
+
+    <!--查询员工学历信息-->
+    <select id="queryEmpEducation" resultType="com.jiubo.oa.bean.EmpEducationBean">
+        SELECT
+            EE.*,e.EDU_NAME,emp.EMP_NAME
+        FROM
+            emp_education EE INNER JOIN education e
+        LEFT JOIN employee emp ON EE.EMP_ID=emp.EMP_ID
+        WHERE EE.EDU_ID=e.EDU_ID
+        <if test="eduId!=null and eduId!=''">
+            AND EE.EDU_ID=#{eduId}
+        </if>
+        <if test="empId!=null and empId!=''">
+            AND EE.EMP_ID=#{empId}
+        </if>
+        <if test="educatId!=null and educatId!=''">
+            AND EE.EDUCAT_ID=#{educatId}
+        </if>
+        <if test="school!=null and school!=''">
+            AND EE.SCHOOL=#{school}
+        </if>
+    </select>
+</mapper>

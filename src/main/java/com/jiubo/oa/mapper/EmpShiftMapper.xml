@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.EmpShiftDao">
+
+    <!--添加调岗信息-->
+    <insert id="addEmpShift" useGeneratedKeys="true" keyProperty="shiftId">
+        INSERT INTO `emp_shift`
+        (`EMP_ID`, `BEFORE_POS_ID`, `CREATETIME`, `AFTER_POS_ID`, `BEFORE_DEPT_ID`, `AFTER_DEPT_ID`, `TYPE`)
+        VALUES
+        ( #{empId}, #{beforePosId}, #{createTime}, #{afterPosId}, #{beforeDeptId}, #{afterDeptId}, #{type})
+    </insert>
+
+    <!--查询员工调岗信息-->
+    <select id="queryEmpShift" resultType="com.jiubo.oa.bean.EmpShiftBean">
+        SELECT
+            es.SHIFT_ID,
+            es.EMP_ID,
+            e.EMP_NAME,
+            es.BEFORE_DEPT_ID,
+            d.DEPT_NAME AS BEFORE_DEPT_NAME,
+            es.AFTER_DEPT_ID,
+            d2.DEPT_NAME AS AFTER_DEPT_NAME,
+            es.BEFORE_POS_ID,
+            p.POS_NAME AS BEFORE_POS_NAME,
+            es.AFTER_POS_ID,
+            p2.POS_NAME AS AFTER_POS_NAME,
+            es.CREATETIME,
+            es.TYPE
+        FROM
+            emp_shift es
+            LEFT JOIN employee e ON es.EMP_ID = e.EMP_ID
+            LEFT JOIN position p ON es.BEFORE_POS_ID = p.POS_ID
+            LEFT JOIN position p2 ON es.AFTER_POS_ID = p2.POS_ID
+            LEFT JOIN department d ON es.BEFORE_DEPT_ID = d.DEPT_ID
+            LEFT JOIN department d2 ON es.AFTER_DEPT_ID = d2.DEPT_ID
+        WHERE 1=1
+            <if test="shiftId!=null and shiftId!=''">
+                AND es.SHIFT_ID=#{shiftId}
+            </if>
+            <if test="type!=null and type!=''">
+                AND es.TYPE=#{type}
+            </if>
+            <if test="beforeDeptId!=null and beforeDeptId!=''">
+                AND d.DEPT_ID=#{beforeDeptId}
+            </if>
+            <if test="afterDeptId!=null and afterDeptId!=''">
+                AND d2.DEPT_ID=#{afterDeptId}
+            </if>
+            <if test="beforePosId!=null and beforePosId!=''">
+                AND p.POS_ID=#{beforePosId}
+            </if>
+            <if test="afterPosId!=null and afterPosId!=''">
+                AND p2.POS_ID=#{afterPosId}
+            </if>
+            <if test="empId!=null and empId!=''">
+                AND es.EMP_ID=#{empId}
+            </if>
+    </select>
+</mapper>

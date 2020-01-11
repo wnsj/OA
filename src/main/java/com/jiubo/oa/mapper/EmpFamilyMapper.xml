@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.EmpFamilyDao">
+
+    <!--新增员工家庭信息-->
+    <insert id="addEmpFamilyList" parameterType="java.util.List">
+        INSERT INTO `emp_family`
+        (`EMP_ID`, `NAME`, `SEX`, `BIRTHDAY`, `RELATION`,`PHONE`)
+        VALUES
+        <foreach collection="empFamilyList" item="family" separator=",">
+            ( #{family.empId}, #{family.name}, #{family.sex}, #{family.birthday}, #{family.relation},#{family.phone})
+        </foreach>
+    </insert>
+
+    <!--修改员工家庭信息-->
+    <update id="updateEmpFamily">
+        UPDATE `emp_family`
+        <set>
+            `NAME`=#{name},
+            `SEX`=#{sex},
+            `BIRTHDAY`=#{birthday},
+            `RELATION`=#{relation},
+            `PHONE`=#{phone}
+        </set>
+        <where>
+            FAMI_ID = #{famiId}
+        </where>
+    </update>
+
+    <!--批量更新员工家庭信息-->
+    <update id="updateByBeanList" parameterType="java.util.List">
+        <foreach collection="empFamilyList" item="family" index="index" open="" close="" separator=";">
+            UPDATE `emp_family`
+            <set>
+                `NAME`=#{family.name},
+                `SEX`=#{family.sex},
+                `BIRTHDAY`=#{family.birthday},
+                `RELATION`=#{family.relation},
+                `PHONE`=#{family.phone}
+            </set>
+            <where>
+                FAMI_ID = #{family.famiId}
+            </where>
+        </foreach>
+    </update>
+
+    <!--查询员工家庭信息-->
+    <select id="queryEmpFamily" resultType="com.jiubo.oa.bean.EmpFamilyBean">
+        SELECT
+            ef.*,e.EMP_NAME
+        FROM
+            emp_family ef LEFT JOIN employee e ON ef.EMP_ID=e.EMP_ID
+            where 1=1
+            <if test="empId!=null and empId!=''">
+                AND ef.EMP_ID=#{empId}
+            </if>
+            <if test="name!=null and name!=''">
+                AND ef.`NAME` LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="sex!=null and sex!=''">
+                AND ef.SEX=#{sex}
+            </if>
+            <if test="famiId!=null and famiId!=''">
+                AND ef.FAMI_ID=#{famiId}
+            </if>
+            <if test="phone!=null and phone!=''">
+                AND ef.PHONE LIKE CONCAT('%',#{phone},'%')
+            </if>
+            <if test="empName!=null and empName!=''">
+                AND e.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+            </if>
+    </select>
+</mapper>

@@ -4,7 +4,7 @@
 
     <!--    查询员工-->
     <select id="queryEmployee" resultType="com.jiubo.oa.bean.EmployeeBean">
-        SELECT E.EMP_ID, E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY, E.POLITICAL, E.REG_RESIDENCE,
+        SELECT E.EMP_ID, E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY,N.NAT_NAME, E.POLITICAL, E.REG_RESIDENCE,
         E.NATIVE_PLACE, E.PHONE, E.PERMANENT_ADDRESS, E.ADDRESS, E.EMERGENCY_CONTACT,
         E.EMERGENCY_PHONE, E.CONTRACT_ATTRIBUTE, E.CONTRACT_PERIOD, E.SUBSCRIPT_1,
         E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.DEPT_ID,
@@ -17,6 +17,8 @@
         ON E.DEPT_ID = D.DEPT_ID
         LEFT JOIN POSITION P
         ON E.POS_ID = P.POS_ID
+        LEFT JOIN NATION N
+        ON E.NATIONALITY=N.NAT_ID
         WHERE 1 = 1
         <if test="empId != null and empId != ''">
             AND E.EMP_ID = #{empId}
@@ -35,6 +37,24 @@
         </if>
         <if test="openId != null and openId != ''">
             AND E.OPEN_ID = #{openId}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND E.PHONE LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="birthday != null and birthday != ''">
+            AND E.BIRTHDAY <![CDATA[>= ]]> #{birthday} AND E.BIRTHDAY <![CDATA[< ]]> ADDDATE(#{birthday},1)
+        </if>
+        <if test="entryDate != null and entryDate != ''">
+            AND E.ENTRY_DATE <![CDATA[>= ]]> #{entryDate} AND E.ENTRY_DATE <![CDATA[< ]]> ADDDATE(#{entryDate},1)
+        </if>
+        <if test="formalDate != null and formalDate != ''">
+            AND E.FORMAL_DATE <![CDATA[>= ]]> #{formalDate} AND E.FORMAL_DATE <![CDATA[< ]]> ADDDATE(#{formalDate},1)
+        </if>
+        <if test="leavelDate != null and leavelDate != ''">
+            AND E.LEAVEL_DATE <![CDATA[>= ]]> #{leavelDate} AND E.LEAVEL_DATE <![CDATA[< ]]> ADDDATE(#{leavelDate},1)
+        </if>
+        <if test="state != null and state != ''">
+            AND E.STATE=#{state}
         </if>
         <if test="excludeEmp != null and excludeEmp.length > 0">
             AND E.EMP_ID NOT IN
