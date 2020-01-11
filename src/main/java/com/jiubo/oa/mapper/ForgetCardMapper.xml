@@ -145,7 +145,7 @@
             <if test="auditorRemark != null and auditorRemark != ''">
                 AUDITOR_REMARK = #{auditorRemark},
             </if>
-            <if test="auditorDate != null auditorDateand != ''">
+            <if test="auditorDate != null and auditorDate != ''">
                 AUDITOR_DATE = #{auditorDate},
             </if>
             <if test="approver != null and approver != ''">
