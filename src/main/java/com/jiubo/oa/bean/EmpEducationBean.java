@@ -45,4 +45,7 @@ public class EmpEducationBean implements Serializable {
 
     //资格证
     private String certification;
+
+    //账户名
+    private String accName;
 }

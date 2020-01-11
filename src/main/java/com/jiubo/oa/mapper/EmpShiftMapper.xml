@@ -25,7 +25,8 @@
             es.AFTER_POS_ID,
             p2.POS_NAME AS AFTER_POS_NAME,
             es.CREATETIME,
-            es.TYPE
+            es.TYPE,
+            e.ACC_NAME
         FROM
             emp_shift es
             LEFT JOIN employee e ON es.EMP_ID = e.EMP_ID
@@ -54,6 +55,9 @@
             </if>
             <if test="empId!=null and empId!=''">
                 AND es.EMP_ID=#{empId}
+            </if>
+            <if test="accName!=null and accName!=''">
+                AND e.ACC_NAME=#{accName}
             </if>
     </select>
 </mapper>

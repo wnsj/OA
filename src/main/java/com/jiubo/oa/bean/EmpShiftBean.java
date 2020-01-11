@@ -55,4 +55,7 @@ public class EmpShiftBean implements Serializable {
     //调动时间
     private String createTime;
 
+    //账户名
+    private String accName;
+
 }

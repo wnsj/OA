@@ -27,7 +27,7 @@
     <!--查询员工学历信息-->
     <select id="queryEmpEducation" resultType="com.jiubo.oa.bean.EmpEducationBean">
         SELECT
-            EE.*,e.EDU_NAME,emp.EMP_NAME
+            EE.*,e.EDU_NAME,emp.EMP_NAME,emp.ACC_NAME
         FROM
             emp_education EE INNER JOIN education e
         LEFT JOIN employee emp ON EE.EMP_ID=emp.EMP_ID
@@ -41,8 +41,8 @@
         <if test="educatId!=null and educatId!=''">
             AND EE.EDUCAT_ID=#{educatId}
         </if>
-        <if test="school!=null and school!=''">
-            AND EE.SCHOOL=#{school}
+        <if test="accName!=null and accName!=''">
+            AND emp.ACC_NAME=#{accName}
         </if>
     </select>
 </mapper>
