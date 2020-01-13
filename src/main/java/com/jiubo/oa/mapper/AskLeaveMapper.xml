@@ -402,5 +402,54 @@
         <if test="rdId != null and rdId != ''">
             AND RD.RD_ID != #{rdId}
         </if>
+
+        UNION
+
+        SELECT FC.FC_ID AS AL_ID,FC.FCR_ID AS LT_ID,FCR.FCR_NAME AS LT_NAME,FC.EMP_ID,E.EMP_NAME,FC.CREATE_DATE,'3' AS
+        BILL
+        FROM FORGET_CARD FC
+        LEFT JOIN EMPLOYEE E
+        ON FC.EMP_ID = E.EMP_ID
+        LEFT JOIN FORGET_CARD_REASON FCR
+        ON FCR.FCR_ID = FC.FCR_ID
+        WHERE FC.EXAMINER_ADV = 0 AND FC.STATE = 0 AND FC.EXAMINER = #{empId}
+        <if test="fcId != null and fcId != ''">
+            AND FC.FC_ID != #{fcId}
+        </if>
+
+        UNION
+
+        SELECT FC.FC_ID AS AL_ID,FC.FCR_ID AS LT_ID,FCR.FCR_NAME AS LT_NAME,FC.EMP_ID,E.EMP_NAME,FC.CREATE_DATE,'3' AS
+        BILL
+        FROM FORGET_CARD FC
+        LEFT JOIN EMPLOYEE E
+        ON FC.EMP_ID = E.EMP_ID
+        LEFT JOIN FORGET_CARD_REASON FCR
+        ON FCR.FCR_ID = FC.FCR_ID
+        WHERE FC.EXAMINER_ADV = 1
+        AND FC.AUDITOR = #{empId}
+        AND FC.AUDITOR_ADV = 0
+        AND FC.STATE = 0
+        <if test="fcId != null and fcId != ''">
+            AND FC.FC_ID != #{fcId}
+        </if>
+
+        UNION
+
+        SELECT FC.FC_ID AS AL_ID,FC.FCR_ID AS LT_ID,FCR.FCR_NAME AS LT_NAME,FC.EMP_ID,E.EMP_NAME,FC.CREATE_DATE,'3' AS
+        BILL
+        FROM FORGET_CARD FC
+        LEFT JOIN EMPLOYEE E
+        ON FC.EMP_ID = E.EMP_ID
+        LEFT JOIN FORGET_CARD_REASON FCR
+        ON FCR.FCR_ID = FC.FCR_ID
+        WHERE FC.EXAMINER_ADV = 1
+        AND FC.AUDITOR_ADV = 1
+        AND FC.APPROVER = #{empId}
+        AND FC.APPROVER_ADV = 0
+        AND FC.STATE = 0
+        <if test="fcId != null and fcId != ''">
+            AND FC.FC_ID != #{fcId}
+        </if>
     </select>
 </mapper>

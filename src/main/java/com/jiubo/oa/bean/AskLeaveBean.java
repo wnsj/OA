@@ -101,6 +101,9 @@ public class AskLeaveBean implements Serializable {
 
     private String deptName;
 
+    //倒休id
     private String rdId;
 
+    //忘记打卡id
+    private String fcId;
 }
