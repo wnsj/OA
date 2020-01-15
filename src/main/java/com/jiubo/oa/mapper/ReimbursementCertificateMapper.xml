@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.ReimbursementCertificateDao">
+
+    <!--    添加凭证-->
+    <insert id="addReimbursementCertificate" useGeneratedKeys="true" keyProperty="rcId">
+        INSERT INTO REIMBURSEMENT_CERTIFICATE (RC_ID, RA_ID, IMG)
+        VALUES (#{rcId}, #{raId}, #{img})
+    </insert>
+
+    <!--    查询凭证-->
+    <select id="queryReimbursementCertificate" resultType="com.jiubo.oa.bean.ReimbursementCertificateBean">
+        SELECT RC_ID, RA_ID, IMG
+        FROM REIMBURSEMENT_CERTIFICATE
+        WHERE 1 = 1
+        <if test="rcId != null and rcId != ''">
+            AND RC_ID = #{rcId}
+        </if>
+        <if test="raId != null and raId != ''">
+            AND RA_ID = #{raId}
+        </if>
+    </select>
+
+    <!--    删除凭证-->
+    <delete id="deleteReimbursementCertificate">
+        DELETE  FROM REIMBURSEMENT_CERTIFICATE
+        WHERE
+        <if test="rcId != null and rcId != ''">
+            RC_ID = #{rcId}
+        </if>
+        <if test="raId != null and raId != ''">
+            RA_ID = #{raId}
+        </if>
+    </delete>
+</mapper>

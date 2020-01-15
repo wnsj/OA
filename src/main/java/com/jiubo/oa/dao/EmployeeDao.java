@@ -25,4 +25,7 @@ public interface EmployeeDao extends BaseMapper<EmployeeBean> {
 
     //岗位调动
     int postTransfer(EmpShiftBean empShiftBean);
+
+    //查询审核人
+    List<EmployeeBean> queryExamine(EmployeeBean employeeBean);
 }

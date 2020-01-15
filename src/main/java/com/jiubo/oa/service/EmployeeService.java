@@ -23,16 +23,24 @@ public interface EmployeeService extends IService<EmployeeBean> {
     public JSONObject login(EmployeeBean employeeBean) throws Exception;
 
     //绑定openId
-    public void bindOpenId(EmployeeBean employeeBean)throws Exception;
+    public void bindOpenId(EmployeeBean employeeBean) throws Exception;
 
     //修改
     public void updateEmployee(EmployeeBean employeeBean) throws Exception;
 
     //新增员工基本信息
-    void addEmployee(EmployeeBean employeeBean) throws  Exception;
+    public void addEmployee(EmployeeBean employeeBean) throws Exception;
 
     //岗位调动
-    void postTransfer(EmpShiftBean empShiftBean) throws  Exception;
+    public void postTransfer(EmpShiftBean empShiftBean) throws Exception;
 
-    EmployeeBean queryAllByEmpId(String empId) throws MessageException, Exception;
+    public EmployeeBean queryAllByEmpId(String empId) throws Exception;
+
+    //查询考勤审查人、审核人、批准人
+    public List<EmployeeBean> queryAttendanceExamine(EmployeeBean employeeBean) throws Exception;
+
+    //查询报销审查人、审核人、批准人
+    public List<EmployeeBean> queryReimbursementExamine(EmployeeBean employeeBean) throws Exception;
+
+
 }

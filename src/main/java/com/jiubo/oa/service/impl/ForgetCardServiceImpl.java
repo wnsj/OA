@@ -83,7 +83,7 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
         if (StringUtils.isBlank(forgetCardBean.getEmpId())) throw new MessageException("申请人不能为空!");
         if (StringUtils.isBlank(forgetCardBean.getExaminer())) throw new MessageException("审查人不能为空!");
         if (StringUtils.isBlank(forgetCardBean.getAuditor())) throw new MessageException("审核人不能为空!");
-        if (StringUtils.isBlank(forgetCardBean.getApprover())) throw new MessageException("批准人不能为空！");
+        //if (StringUtils.isBlank(forgetCardBean.getApprover())) throw new MessageException("批准人不能为空！");
         if (StringUtils.isBlank(forgetCardBean.getForgetDate())) throw new MessageException("忘记打卡日期不能为空!");
 //        if (StringUtils.isBlank(forgetCardBean.getWitness())) throw new MessageException("证明人不能为空!");
         List<JSONObject> list = new ArrayList<JSONObject>();
@@ -98,9 +98,9 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
     private void applyForgetCardMsg(ForgetCardBean forgetCardBean, List<JSONObject> list, boolean flag) throws Exception {
         List<EmployeeBean> employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCardBean.getEmpId()));
         if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
-        List<ForgetCardReasonBean> forgetCardReasonBeans = forgetCardReasonService.queryForgetCardReason(new ForgetCardReasonBean().setFcrId(forgetCardBean.getFcrId()));
-        if (forgetCardReasonBeans.isEmpty()) throw new MessageException("未查询到未打卡原因!");
-        ForgetCardReasonBean forgetCardReasonBean = forgetCardReasonBeans.get(0);
+//        List<ForgetCardReasonBean> forgetCardReasonBeans = forgetCardReasonService.queryForgetCardReason(new ForgetCardReasonBean().setFcrId(forgetCardBean.getFcrId()));
+//        if (forgetCardReasonBeans.isEmpty()) throw new MessageException("未查询到未打卡原因!");
+//        ForgetCardReasonBean forgetCardReasonBean = forgetCardReasonBeans.get(0);
         EmployeeBean employeeBean = employeeBeans.get(0);
         JSONObject jsonObject = null;
         JSONObject data = null;
@@ -124,7 +124,8 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
 
             //请假类型
             content = new JSONObject();
-            content.put("value", forgetCardReasonBean.getFcrName());
+            //content.put("value", forgetCardReasonBean.getFcrName());
+            content.put("value","忘记打卡");
             content.put("color", "#173177");
             data.put("keyword2", content);
 
@@ -170,7 +171,8 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
 
             //请假类型
             content = new JSONObject();
-            content.put("value", forgetCardReasonBean.getFcrName());
+//            content.put("value", forgetCardReasonBean.getFcrName());
+            content.put("value", "忘记打卡");
             content.put("color", "#173177");
             data.put("keyword2", content);
 
@@ -265,7 +267,8 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
 
                     //请假类型
                     content = new JSONObject();
-                    content.put("value", forgetCard.getFcrName());
+//                    content.put("value", forgetCard.getFcrName());
+                    content.put("value", "忘记打卡");
                     content.put("color", "#173177");
                     data.put("keyword2", content);
 
@@ -298,55 +301,104 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
             } else {
                 //同意，通知批准人审核
                 updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setAuditorAdv("1").setAuditorRemark(forgetCardBean.getAuditorRemark()).setAuditorDate(nowStr));
-                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getApprover()));
-                if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
-                EmployeeBean auditor = employeeBeans.get(0);
-                if (StringUtils.isNotBlank(auditor.getOpenId())) {
-                    //审核人消息
-                    jsonObject = new JSONObject();
-                    jsonObject.put("touser", auditor.getOpenId());
-                    jsonObject.put("url", examineForgetCardUrl.concat("?fcId=").concat(forgetCard.getFcId()));
-                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
-                    data = new JSONObject();
+                if (StringUtils.isBlank(forgetCard.getApprover())){
+                    employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getEmpId()));
+                    if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
+                    EmployeeBean employeeBean = employeeBeans.get(0);
+                    if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
+                        jsonObject = new JSONObject();
+                        jsonObject.put("touser", employeeBean.getOpenId());
+                        jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                        data = new JSONObject();
 
-                    JSONObject content = new JSONObject();
-                    content.put("value", "有新的忘记打卡证明需要审核!");
-                    content.put("color", "#173177");
-                    data.put("first", content);
+                        JSONObject content = new JSONObject();
+                        content.put("value", "您申请的忘记打卡证明已通过审核!");
+                        content.put("color", "#173177");
+                        data.put("first", content);
 
-                    //申请人
-                    content = new JSONObject();
-                    content.put("value", forgetCard.getEmpName());
-                    content.put("color", "#173177");
-                    data.put("keyword1", content);
+                        //申请人
+                        content = new JSONObject();
+                        content.put("value", employeeBean.getEmpName());
+                        content.put("color", "#173177");
+                        data.put("keyword1", content);
 
-                    //请假类型
-                    content = new JSONObject();
-                    content.put("value", forgetCard.getFcrName());
-                    content.put("color", "#173177");
-                    data.put("keyword2", content);
+                        //请假类型
+                        content = new JSONObject();
+//                    content.put("value", forgetCard.getFcrName());
+                        content.put("value", "忘记打卡");
+                        content.put("color", "#173177");
+                        data.put("keyword2", content);
 
-                    //请假时间
-                    content = new JSONObject();
-                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(forgetCard.getCreateDate())));
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
+                        //请假时间
+                        content = new JSONObject();
+                        content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(forgetCard.getCreateDate())));
+                        content.put("color", "#173177");
+                        data.put("keyword3", content);
 
-                    //备注
-                    content = new JSONObject();
-                    content.put("value", "有新的忘记打卡证明需要审核,点击查看详情!");
-                    content.put("color", "#173177");
-                    data.put("remark", content);
+                        //备注
+                        content = new JSONObject();
+                        content.put("value", "您申请的忘记打卡证明已通过!");
+                        content.put("color", "#173177");
+                        data.put("remark", content);
 
-                    jsonObject.put("data", data);
+                        jsonObject.put("data", data);
 
-                    list.add(jsonObject);
+                        list.add(jsonObject);
+                    }
+                }else{
+                    employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getApprover()));
+                    if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
+                    EmployeeBean auditor = employeeBeans.get(0);
+                    if (StringUtils.isNotBlank(auditor.getOpenId())) {
+                        //审核人消息
+                        jsonObject = new JSONObject();
+                        jsonObject.put("touser", auditor.getOpenId());
+                        jsonObject.put("url", examineForgetCardUrl.concat("?fcId=").concat(forgetCard.getFcId()));
+                        jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                        data = new JSONObject();
+
+                        JSONObject content = new JSONObject();
+                        content.put("value", "有新的忘记打卡证明需要审核!");
+                        content.put("color", "#173177");
+                        data.put("first", content);
+
+                        //申请人
+                        content = new JSONObject();
+                        content.put("value", forgetCard.getEmpName());
+                        content.put("color", "#173177");
+                        data.put("keyword1", content);
+
+                        //请假类型
+                        content = new JSONObject();
+//                    content.put("value", forgetCard.getFcrName());
+                        content.put("value", "忘记打卡");
+                        content.put("color", "#173177");
+                        data.put("keyword2", content);
+
+                        //请假时间
+                        content = new JSONObject();
+                        content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(forgetCard.getCreateDate())));
+                        content.put("color", "#173177");
+                        data.put("keyword3", content);
+
+                        //备注
+                        content = new JSONObject();
+                        content.put("value", "有新的忘记打卡证明需要审核,点击查看详情!");
+                        content.put("color", "#173177");
+                        data.put("remark", content);
+
+                        jsonObject.put("data", data);
+
+                        list.add(jsonObject);
+                    }
                 }
             }
         } else if (StringUtils.isNotBlank(forgetCardBean.getApproverAdv())) {
             //批准人审核
             if (!"0".equals(forgetCard.getApproverAdv())) throw new MessageException("已完成审核,不可重复审核!");
+            if(StringUtils.isBlank(forgetCard.getApprover()))throw new MessageException("该申请只需2个审核人审核，不可审核!");
             if (!forgetCard.getApprover().equals(forgetCardBean.getApprover())) throw new MessageException("不可代替他人审核!");
+
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(forgetCardBean.getApproverAdv())) {
                 //不同意，发消息给申请人
@@ -377,7 +429,8 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
 
                     //请假类型
                     content = new JSONObject();
-                    content.put("value", forgetCard.getFcrName());
+//                    content.put("value", forgetCard.getFcrName());
+                    content.put("value", "忘记打卡");
                     content.put("color", "#173177");
                     data.put("keyword2", content);
 
@@ -406,9 +459,9 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
     private void operationForgetEmpMsg(ForgetCardBean forgetCardBean, List<JSONObject> list) throws Exception {
         List<EmployeeBean> employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCardBean.getEmpId()));
         if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
-        List<ForgetCardReasonBean> forgetCardReasonBeans = forgetCardReasonService.queryForgetCardReason(new ForgetCardReasonBean().setFcrId(forgetCardBean.getFcrId()));
-        if (forgetCardReasonBeans.isEmpty()) throw new MessageException("未查询到未打卡原因!");
-        ForgetCardReasonBean forgetCardReasonBean = forgetCardReasonBeans.get(0);
+//        List<ForgetCardReasonBean> forgetCardReasonBeans = forgetCardReasonService.queryForgetCardReason(new ForgetCardReasonBean().setFcrId(forgetCardBean.getFcrId()));
+//        if (forgetCardReasonBeans.isEmpty()) throw new MessageException("未查询到未打卡原因!");
+//        ForgetCardReasonBean forgetCardReasonBean = forgetCardReasonBeans.get(0);
         EmployeeBean employeeBean = employeeBeans.get(0);
         JSONObject jsonObject = null;
         if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
@@ -432,7 +485,8 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
 
             //请假类型
             content = new JSONObject();
-            content.put("value", forgetCardReasonBean.getFcrName());
+//            content.put("value", forgetCardReasonBean.getFcrName());
+            content.put("value", "忘记打卡");
             content.put("color", "#173177");
             data.put("keyword2", content);
 

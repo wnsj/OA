@@ -12,7 +12,6 @@ import com.jiubo.oa.service.RestDownService;
 import com.jiubo.oa.service.RestReasonService;
 import com.jiubo.oa.service.WxSendMessageService;
 import com.jiubo.oa.util.TimeUtil;
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +29,10 @@ import java.util.List;
  */
 @Service
 public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> implements RestDownService {
+
+    //相差天数
+    @Value("${differDay}")
+    private int differDay;
 
     @Autowired
     private RestDownDao restDownDao;
@@ -87,9 +90,13 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
         if (StringUtils.isBlank(restDownBean.getRestDateEnd())) throw new MessageException("倒休结束时间不能为空!");
         if (StringUtils.isBlank(restDownBean.getExaminer())) throw new MessageException("审查人不能为空!");
         if (StringUtils.isBlank(restDownBean.getAuditor())) throw new MessageException("审核人不能为空!");
-        if (StringUtils.isBlank(restDownBean.getApprover())) throw new MessageException("批准人不能为空！");
+
         if (StringUtils.isBlank(restDownBean.getReaId())) throw new MessageException("倒休原因不能为空!");
         List<JSONObject> list = new ArrayList<JSONObject>();
+        if (TimeUtil.differentDays(TimeUtil.parseAnyDate(restDownBean.getRestDateBeg()), TimeUtil.parseAnyDate(restDownBean.getRestDateEnd())) > differDay) {
+            //超过3天
+            if (StringUtils.isBlank(restDownBean.getApprover())) throw new MessageException("批准人不能为空！");
+        }
         addRestDown(restDownBean);
         applyRestDownMsg(restDownBean, list, true);
         for (JSONObject jsonObject : list) {
@@ -228,6 +235,12 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
                 updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setState("1"));
             } else {
                 //修改倒休，推送送消息
+                if (TimeUtil.differentDays(TimeUtil.parseAnyDate(restDownBean.getRestDateBeg()), TimeUtil.parseAnyDate(restDownBean.getRestDateEnd())) > differDay) {
+                    //超过3天
+                    if (StringUtils.isBlank(restDownBean.getApprover())) throw new MessageException("批准人不能为空！");
+                }else{
+                    restDownDao.updateById(new RestDownBean().setApprover(null));
+                }
                 restDownBean.setState("0");
                 restDownBean.setExaminerAdv("0");
                 restDownBean.setAuditorAdv("0");
@@ -355,6 +368,7 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
             //批准人审核
             if (!"0".equals(restDown.getApproverAdv())) throw new MessageException("该申请已完成审核,不可重复审核!");
             if (!"1".equals(restDown.getAuditorAdv())) throw new MessageException("审核人未同意前不可审核!");
+            if (StringUtils.isBlank(restDown.getApprover()))throw new MessageException("该申请只有2个审核人不可审核!");
             if (!restDown.getApprover().equals(restDownBean.getApprover())) throw new MessageException("不可代替他人审核!");
 
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());

@@ -1,5 +1,7 @@
 package com.jiubo.oa.bean;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -20,6 +22,7 @@ public class AskLeaveBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //请假ID
+    @TableId(value = "AL_ID", type = IdType.AUTO)
     private String alId;
 
     //请假类型
