@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiubo.oa.dao.InformationSheetDao">
+
+    <!--    查询信息单   -->
+    <select id="queryInformationSheet" resultType="com.jiubo.oa.bean.InformationSheetBean">
+        SELECT INF_ID
+        ,SHEET_TYPE
+        ,DEGREE_TYPE
+        ,SENDER_ID
+        ,EMP_SEND_ID
+        ,DEPT_SEND_ID
+        ,SEND_DATE
+        ,DEPT_REC_ID
+        ,EMP_REC_ID
+        ,EMP_ID
+        ,THEME
+        ,CONTENT
+        ,REQUIRE_CONTENT
+        ,SEND_AGREE
+        ,SEND_CONTENT
+        ,SEND_APP_DATE
+        ,REC_AGREE
+        ,REC_CONTENT
+        ,REC_APP_DATE
+        ,STATE
+        FROM information_sheet
+        WHERE 1 = 1
+        <if test="infId != null and infId != ''">
+            AND INF_ID = #{infId}
+        </if>
+    </select>
+</mapper>
