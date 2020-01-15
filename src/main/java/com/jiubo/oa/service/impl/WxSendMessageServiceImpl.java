@@ -120,6 +120,7 @@ public class WxSendMessageServiceImpl implements WxSendMessageService {
         //log.error("获取到的accessToken数据{}",accessToken);
         if (StringUtils.isNotBlank(accessToken) && flag == flag) {
             String url = sendMessageUrl.concat(accessToken);
+
             JSONObject resData = restTemplate.postForObject(url, jsonObject, JSONObject.class);
             if (resData == null) {
                 log.error("没有响应数据!");

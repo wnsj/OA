@@ -111,4 +111,28 @@ public class EmployeeAction {
         jsonObject.put(Constant.Result.RETDATA, employeeService.queryAllByEmpId(employeeBean.getEmpId()));
         return jsonObject;
     }
+
+    //查询考勤审核人
+    @PostMapping(value = "/queryAttendanceExamine")
+    public JSONObject queryAttendanceExamine(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        jsonObject.put(Constant.Result.RETDATA, employeeService.queryAttendanceExamine(employeeBean));
+        return jsonObject;
+    }
+
+    //查询报销审核人
+    @PostMapping(value = "/queryReimbursementExamine")
+    public JSONObject queryReimbursementExamine(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        jsonObject.put(Constant.Result.RETDATA, employeeService.queryReimbursementExamine(employeeBean));
+        return jsonObject;
+    }
 }

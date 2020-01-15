@@ -122,6 +122,11 @@ public class EmployeeBean implements Serializable {
     //是否显示密码
     private String showPwd;
 
+    //上级
+    private String leaderId;
+
+    //上级姓名
+    private String leaderName;
 
     //==================学历信息====================
     private EmpEducationBean empEducationBean;

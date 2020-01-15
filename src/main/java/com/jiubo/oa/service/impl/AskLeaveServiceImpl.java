@@ -30,6 +30,10 @@ import java.util.List;
 @Service
 public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> implements AskLeaveService {
 
+    //相差天数
+    @Value("${differDay}")
+    private int differDay;
+
     //修改页面
     @Value("${modifyUrl}")
     private String modifyUrl;
@@ -95,8 +99,12 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
         if (StringUtils.isBlank(askLeaveBean.getEndDate())) throw new MessageException("请假结束时间不能为空!");
         if (StringUtils.isBlank(askLeaveBean.getExaminer())) throw new MessageException("审查人不能为空!");
         if (StringUtils.isBlank(askLeaveBean.getAuditor())) throw new MessageException("审核人不能为空!");
-        if (StringUtils.isBlank(askLeaveBean.getApprover())) throw new MessageException("批准人不能为空！");
+
         if (StringUtils.isBlank(askLeaveBean.getLtId())) throw new MessageException("假期类型不能为空!");
+        if (TimeUtil.differentDays(TimeUtil.parseAnyDate(askLeaveBean.getBegDate()), TimeUtil.parseAnyDate(askLeaveBean.getEndDate())) > differDay) {
+            //超过3天
+            if (StringUtils.isBlank(askLeaveBean.getApprover())) throw new MessageException("批准人不能为空！");
+        }
         askLeaveBean.setState("0");
         askLeaveBean.setExaminerAdv("0");
         askLeaveBean.setExaminerAdv("0");
@@ -243,6 +251,13 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setState("1"));
             } else {
                 //修改申请，则申请需重新审核
+                if (TimeUtil.differentDays(TimeUtil.parseAnyDate(askLeaveBean.getBegDate()), TimeUtil.parseAnyDate(askLeaveBean.getEndDate())) > differDay) {
+                    //超过3天
+                    if (StringUtils.isBlank(askLeaveBean.getApprover())) throw new MessageException("批准人不能为空！");
+                } else {
+
+                    askLeaveDao.updateById(new AskLeaveBean().setApprover(null));
+                }
                 askLeaveBean.setState("0");
                 askLeaveBean.setExaminerAdv("0");
                 askLeaveBean.setExaminerAdv("0");
@@ -305,50 +320,98 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 }
             } else {
                 updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setExaminerAdv("1").setExaminerDate(nowStr));
-                //通知审核人审批申请
-                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getAuditor()));
-                if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
-                EmployeeBean auditor = employeeBeans.get(0);
-                if (StringUtils.isNotBlank(auditor.getOpenId())) {
-                    //审查人消息
-                    jsonObject = new JSONObject();
-                    jsonObject.put("touser", auditor.getOpenId());
-                    jsonObject.put("url", examineUrl.concat("?alId=").concat(askLeaveBean.getAlId()));
-                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
-                    data = new JSONObject();
+                if (StringUtils.isBlank(askLeave.getApprover())) {
+                    //通知申请人审核通过
+                    employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getEmpId()));
+                    if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
+                    EmployeeBean employeeBean = employeeBeans.get(0);
+                    if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
+                        jsonObject = new JSONObject();
+                        jsonObject.put("touser", employeeBean.getOpenId());
+                        jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                        if ("2".equals(askLeaveBean.getApproverAdv()))
+                            jsonObject.put("url", modifyUrl.concat("?alId=").concat(askLeave.getAlId()));
+                        data = new JSONObject();
 
-                    JSONObject content = new JSONObject();
-                    content.put("value", "有新的请假申请需要审核!");
-                    content.put("color", "#173177");
-                    data.put("first", content);
+                        JSONObject content = new JSONObject();
+                        content.put("value", "您申请的请假申请已通过审核!");
+                        content.put("color", "#173177");
+                        data.put("first", content);
 
-                    //申请人
-                    content = new JSONObject();
-                    content.put("value", auditor.getEmpName());
-                    content.put("color", "#173177");
-                    data.put("keyword1", content);
+                        //申请人
+                        content = new JSONObject();
+                        content.put("value", employeeBean.getEmpName());
+                        content.put("color", "#173177");
+                        data.put("keyword1", content);
 
-                    //请假类型
-                    content = new JSONObject();
-                    content.put("value", askLeave.getLtName());
-                    content.put("color", "#173177");
-                    data.put("keyword2", content);
+                        //请假类型
+                        content = new JSONObject();
+                        content.put("value", askLeave.getLtName());
+                        content.put("color", "#173177");
+                        data.put("keyword2", content);
 
-                    //请假时间
-                    content = new JSONObject();
-                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(askLeave.getCreateDate())));
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
+                        //请假时间
+                        content = new JSONObject();
+                        content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(askLeave.getCreateDate())));
+                        content.put("color", "#173177");
+                        data.put("keyword3", content);
 
-                    //备注
-                    content = new JSONObject();
-                    content.put("value", "有新的请假申请需要审核,点击查看详情!");
-                    content.put("color", "#173177");
-                    data.put("remark", content);
+                        //备注
+                        content = new JSONObject();
+                        content.put("value", "您申请的请假申请已通过");
+                        content.put("color", "#173177");
+                        data.put("remark", content);
 
-                    jsonObject.put("data", data);
+                        jsonObject.put("data", data);
 
-                    list.add(jsonObject);
+                        list.add(jsonObject);
+                    }
+                } else {
+                    //通知审核人审批申请
+                    employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getAuditor()));
+                    if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
+                    EmployeeBean auditor = employeeBeans.get(0);
+                    if (StringUtils.isNotBlank(auditor.getOpenId())) {
+                        //审查人消息
+                        jsonObject = new JSONObject();
+                        jsonObject.put("touser", auditor.getOpenId());
+                        jsonObject.put("url", examineUrl.concat("?alId=").concat(askLeaveBean.getAlId()));
+                        jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                        data = new JSONObject();
+
+                        JSONObject content = new JSONObject();
+                        content.put("value", "有新的请假申请需要审核!");
+                        content.put("color", "#173177");
+                        data.put("first", content);
+
+                        //申请人
+                        content = new JSONObject();
+                        content.put("value", auditor.getEmpName());
+                        content.put("color", "#173177");
+                        data.put("keyword1", content);
+
+                        //请假类型
+                        content = new JSONObject();
+                        content.put("value", askLeave.getLtName());
+                        content.put("color", "#173177");
+                        data.put("keyword2", content);
+
+                        //请假时间
+                        content = new JSONObject();
+                        content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(askLeave.getCreateDate())));
+                        content.put("color", "#173177");
+                        data.put("keyword3", content);
+
+                        //备注
+                        content = new JSONObject();
+                        content.put("value", "有新的请假申请需要审核,点击查看详情!");
+                        content.put("color", "#173177");
+                        data.put("remark", content);
+
+                        jsonObject.put("data", data);
+
+                        list.add(jsonObject);
+                    }
                 }
             }
         } else if (StringUtils.isNotBlank(askLeaveBean.getAuditorAdv())) {
@@ -455,6 +518,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             //批准人审核
             if (!"0".equals(askLeave.getApproverAdv())) throw new MessageException("该申请已完成审核,不可重复审核!");
             if (!"1".equals(askLeave.getAuditorAdv())) throw new MessageException("审核人未同意前不可审核!");
+            if (StringUtils.isBlank(askLeave.getApprover()))throw new MessageException("该申请只有2个审核人不可审核!");
             if (!askLeave.getApprover().equals(askLeaveBean.getApprover())) throw new MessageException("不可代替他人审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             String result = "未通过";

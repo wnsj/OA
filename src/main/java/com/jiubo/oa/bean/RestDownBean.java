@@ -1,5 +1,7 @@
 package com.jiubo.oa.bean;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -20,6 +22,7 @@ public class RestDownBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //倒休id
+    @TableId(value = "RD_ID", type = IdType.AUTO)
     private String rdId;
 
     //倒休人id

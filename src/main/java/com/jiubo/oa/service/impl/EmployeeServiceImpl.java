@@ -99,7 +99,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
     @Transactional(rollbackFor = Exception.class)
     public void addEmployee(EmployeeBean employeeBean) throws Exception {
         employeeBean.setState("1");
-        if(employeeDao.addEmployee(employeeBean)<=0)throw new MessageException("添加失败");
+        if (employeeDao.addEmployee(employeeBean) <= 0) throw new MessageException("添加失败");
 //        //获取学历信息
 //        EmpEducationBean empEducationBean = employeeBean.getEmpEducationBean();
 //        if (empEducationBean!=null) {
@@ -121,13 +121,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
     @Transactional(rollbackFor = Exception.class)
     public void postTransfer(EmpShiftBean empShiftBean) throws Exception {
         //岗位调动
-        if (employeeDao.postTransfer(empShiftBean)<=0) throw new MessageException("岗位调动失败");
+        if (employeeDao.postTransfer(empShiftBean) <= 0) throw new MessageException("岗位调动失败");
         //修改员工信息表的岗位信息
         EmployeeBean employeeBean = new EmployeeBean();
         employeeBean.setEmpId(empShiftBean.getEmpId());
         employeeBean.setDeptId(empShiftBean.getAfterDeptId());
         employeeBean.setPosId(empShiftBean.getAfterPosId());
-        if (employeeDao.updateEmployee(employeeBean)<=0) throw new MessageException("岗位调动失败");
+        if (employeeDao.updateEmployee(employeeBean) <= 0) throw new MessageException("岗位调动失败");
     }
 
     @Override
@@ -141,17 +141,17 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
         //查询员工家庭信息
         EmpFamilyBean empFamilyBean = new EmpFamilyBean();
         empFamilyBean.setEmpId(empId);
-        List<EmpFamilyBean> empFamilyBeanList=empFamilyDao.queryEmpFamily(empFamilyBean);
+        List<EmpFamilyBean> empFamilyBeanList = empFamilyDao.queryEmpFamily(empFamilyBean);
         result.setEmpFamilyList(empFamilyBeanList);
         //查询员工学历信息
         EmpEducationBean empEducationBean = new EmpEducationBean();
         empEducationBean.setEmpId(empId);
-        EmpEducationBean educationBean=empEducationDao.queryEmpEducation(empEducationBean);
+        EmpEducationBean educationBean = empEducationDao.queryEmpEducation(empEducationBean);
         result.setEmpEducationBean(educationBean);
         //查询员工调岗信息
         EmpShiftBean empShiftBean = new EmpShiftBean();
         empShiftBean.setEmpId(empId);
-        List<EmpShiftBean> empShiftBeanList=empShiftDao.queryEmpShift(empShiftBean);
+        List<EmpShiftBean> empShiftBeanList = empShiftDao.queryEmpShift(empShiftBean);
         result.setEmpShiftBeanList(empShiftBeanList);
         return result;
     }
@@ -166,9 +166,70 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
         if (employeeBeans.isEmpty()) throw new MessageException(employeeBean.getAccName() + "账号不存在!");
         EmployeeBean employee = employeeBeans.get(0);
         if (!employee.getAccPwd().equals(employeeBean.getAccPwd())) throw new MessageException("密码错误!");
-        if (StringUtils.isNotBlank(employee.getOpenId()))throw new MessageException("该账号已绑定微信，不可重复绑定!");
+        if (StringUtils.isNotBlank(employee.getOpenId())) throw new MessageException("该账号已绑定微信，不可重复绑定!");
         employeeBeans = queryEmployee(new EmployeeBean().setOpenId(employeeBean.getOpenId()));
-        if (employeeBeans.size() > 0)throw new MessageException("该微信已绑定账号,不可重复绑定!");
+        if (employeeBeans.size() > 0) throw new MessageException("该微信已绑定账号,不可重复绑定!");
         updateEmployee(new EmployeeBean().setEmpId(employee.getEmpId()).setOpenId(employeeBean.getOpenId()));
+    }
+
+    @Override
+    public List<EmployeeBean> queryAttendanceExamine(EmployeeBean employeeBean) throws Exception {
+        //if (StringUtils.isBlank(employeeBean.getEmpId())) throw new MessageException("申请人id不能为空!");
+        List<EmployeeBean> employeeBeans = queryEmployee(new EmployeeBean().setEmpId(employeeBean.getEmpId()));
+        if (employeeBeans.isEmpty()) throw new MessageException("申请人id错误!");
+        EmployeeBean employee = employeeBeans.get(0);
+        if ("院长".equals(employee.getPosName())) {
+            return employeeBeans;
+        } else if ("科长".equals(employee.getPosName()) || "主任".equals(employee.getPosName())) {
+            if (StringUtils.isBlank(employeeBean.getState()) || "1".equals(employeeBean.getState())) {
+                //返回人事科长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("人事科").setPosName("科长"));
+            } else if ("2".equals(employeeBean.getState())) {
+                //返回院长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("院办").setPosName("院长"));
+            }
+        } else {
+            if (StringUtils.isBlank(employeeBean.getState()) || "1".equals(employeeBean.getState())) {
+                //返回当前部门负责人
+                return employeeDao.queryExamine(new EmployeeBean().setEmpId(employee.getLeaderId()));
+            } else if ("2".equals(employeeBean.getState())) {
+                //返回人事科长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("人事科").setPosName("科长"));
+            } else if ("3".equals(employeeBean.getState())) {
+                //返回院长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("院办").setPosName("院长"));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<EmployeeBean> queryReimbursementExamine(EmployeeBean employeeBean) throws Exception {
+        List<EmployeeBean> employeeBeans = queryEmployee(new EmployeeBean().setEmpId(employeeBean.getEmpId()));
+        if (employeeBeans.isEmpty()) throw new MessageException("申请人id错误!");
+        EmployeeBean employee = employeeBeans.get(0);
+        if ("院长".equals(employee.getPosName())) {
+            return employeeBeans;
+        } else if ("科长".equals(employee.getPosName()) || "主任".equals(employee.getPosName())) {
+            if (StringUtils.isBlank(employeeBean.getState()) || "1".equals(employeeBean.getState())) {
+                //返回财务科长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("财务科").setPosName("科长"));
+            } else if ("2".equals(employeeBean.getState())) {
+                //返回院长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("院办").setPosName("院长"));
+            }
+        } else {
+            if (StringUtils.isBlank(employeeBean.getState()) || "1".equals(employeeBean.getState())) {
+                //返回当前部门负责人
+                return employeeDao.queryExamine(new EmployeeBean().setEmpId(employee.getLeaderId()));
+            } else if ("2".equals(employeeBean.getState())) {
+                //返回财务科长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("财务科").setPosName("科长"));
+            } else if ("3".equals(employeeBean.getState())) {
+                //返回院长
+                return employeeDao.queryExamine(new EmployeeBean().setDeptName("院办").setPosName("院长"));
+            }
+        }
+        return null;
     }
 }

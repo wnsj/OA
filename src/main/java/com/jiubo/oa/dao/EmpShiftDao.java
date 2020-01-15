@@ -12,4 +12,5 @@ public interface EmpShiftDao extends BaseMapper<EmpShiftBean> {
 
     //查询员工调岗信息
     List<EmpShiftBean> queryEmpShift(EmpShiftBean empShiftBean);
+
 }

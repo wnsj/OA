@@ -4,10 +4,11 @@
 
     <!--    查询员工-->
     <select id="queryEmployee" resultType="com.jiubo.oa.bean.EmployeeBean">
-        SELECT E.EMP_ID, E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY,N.NAT_NAME, E.POLITICAL, E.REG_RESIDENCE,
+        SELECT E.EMP_ID, E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY,N.NAT_NAME, E.POLITICAL,
+        E.REG_RESIDENCE,
         E.NATIVE_PLACE, E.PHONE, E.PERMANENT_ADDRESS, E.ADDRESS, E.EMERGENCY_CONTACT,
         E.EMERGENCY_PHONE, E.CONTRACT_ATTRIBUTE, E.CONTRACT_PERIOD, E.SUBSCRIPT_1,
-        E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.DEPT_ID,
+        E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.DEPT_ID,E.LEADER_ID,EMP.EMP_NAME AS LEADERNAME,
         E.POS_ID, E.ENTRY_DATE, E.FORMAL_DATE, E.LEAVEL_DATE, E.STATE, E.OPEN_ID,D.DEPT_NAME,P.POS_NAME
         <if test="showPwd == 1">
             , E.ACC_PWD
@@ -17,6 +18,8 @@
         ON E.DEPT_ID = D.DEPT_ID
         LEFT JOIN POSITION P
         ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EMP
+        ON E.LEADER_ID = EMP.EMP_ID
         LEFT JOIN NATION N
         ON E.NATIONALITY=N.NAT_ID
         WHERE 1 = 1
@@ -43,6 +46,9 @@
         </if>
         <if test="birthday != null and birthday != ''">
             AND E.BIRTHDAY <![CDATA[>= ]]> #{birthday} AND E.BIRTHDAY <![CDATA[< ]]> ADDDATE(#{birthday},1)
+        </if>
+        <if test="leaderId != null and leaderId != ''">
+            AND E.LEADER_ID = #{leaderId}
         </if>
         <if test="entryDate != null and entryDate != ''">
             AND E.ENTRY_DATE <![CDATA[>= ]]> #{entryDate} AND E.ENTRY_DATE <![CDATA[< ]]> ADDDATE(#{entryDate},1)
@@ -153,6 +159,9 @@
             <if test="openId != null and openId != ''">
                 OPEN_ID = #{openId},
             </if>
+            <if test="leaderId != null and leaderId != ''">
+                LEADER_ID = #{leaderId},
+            </if>
         </trim>
         WHERE EMP_ID = #{empId}
     </update>
@@ -160,7 +169,7 @@
 
     <!--新增员工基本信息-->
     <insert id="addEmployee" useGeneratedKeys="true" keyProperty="empId">
-        INSERT INTO `employee`
+        INSERT INTO EMPLOYEE
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="empName != null and empName != ''">
                 EMP_NAME,
@@ -246,11 +255,14 @@
             <if test="openId != null and openId != ''">
                 OPEN_ID,
             </if>
+            <if test="leaderId != null and leaderId != ''">
+                LEADER_ID,
+            </if>
         </trim>
 
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="empName != null and empName != ''">
-                #{empName} ,
+                #{empName},
             </if>
             <if test="sex != null and sex != ''">
                 #{sex},
@@ -333,7 +345,44 @@
             <if test="openId != null and openId != ''">
                 #{openId},
             </if>
+            <if test="leaderId != null and leaderId != ''">
+                #{leaderId},
+            </if>
         </trim>
     </insert>
+
+    <!--    查询审核人-->
+    <select id="queryExamine" resultType="com.jiubo.oa.bean.EmployeeBean">
+        SELECT
+            E.EMP_ID,E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY, E.POLITICAL,
+            E.NATIVE_PLACE, E.PHONE, E.PERMANENT_ADDRESS, E.ADDRESS, E.EMERGENCY_CONTACT,
+            E.EMERGENCY_PHONE, E.CONTRACT_ATTRIBUTE, E.CONTRACT_PERIOD, E.SUBSCRIPT_1,
+            E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.DEPT_ID,E.LEADER_ID,
+            E.POS_ID, E.ENTRY_DATE, E.FORMAL_DATE, E.LEAVEL_DATE, E.STATE, E.OPEN_ID,D.DEPT_NAME,P.POS_NAME
+        FROM EMPLOYEE E
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        WHERE 1 = 1
+        <if test="empId != null and empId != ''">
+            AND E.EMP_ID = #{empId}
+        </if>
+        <if test="deptId != null and deptId != ''">
+            AND E.DEPT_ID = #{deptId}
+        </if>
+        <if test="deptName != null and deptName != ''">
+            AND D.DEPT_NAME = #{deptName}
+        </if>
+        <if test="posId != null and posId != ''">
+            AND E.POS_ID = #{posId}
+        </if>
+        <if test="leaderId != null and leaderId != ''">
+            AND E.LEADER_ID = #{leaderId}
+        </if>
+        <if test="posName != null and posName != ''">
+            AND P.POS_NAME = #{posName}
+        </if>
+    </select>
 </mapper>
 
