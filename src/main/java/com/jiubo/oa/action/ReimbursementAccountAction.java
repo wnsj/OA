@@ -1,24 +1,12 @@
 package com.jiubo.oa.action;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jiubo.oa.bean.ReimbursementAccountBean;
 import com.jiubo.oa.common.Constant;
 import com.jiubo.oa.service.ReimbursementAccountService;
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.FileItemIterator;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @desc:
@@ -33,27 +21,41 @@ public class ReimbursementAccountAction {
     @Autowired
     private ReimbursementAccountService accountService;
 
-    @PostMapping("/addReimbursementAccount")
-    public JSONObject addReimbursementAccount(HttpServletRequest request) throws Exception {
-        //1、验证是否为文件上传
-        if (ServletFileUpload.isMultipartContent(request)) {
-            //2、创建工厂类
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            //3、设置临时文件目录
-            factory.setRepository(new File(""));
-            //4、创建文件上传类对象
-            ServletFileUpload sfu = new ServletFileUpload(factory);
-            List<FileItem> list = sfu.parseRequest(new ServletRequestContext(request));
-            for (FileItem fileItem: list){
-                System.out.println(fileItem.getFieldName());
-                fileItem.write(new File("c:/".concat(fileItem.getFieldName())));
-            }
-        }
+    //添加报销单
+    @PostMapping(value = "/addReimbursementAccount")
+    public JSONObject addReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        System.out.println(reimbursementAccountBean);
+        //System.out.println(reimbursementAccountBean.getFile()[0].getOriginalFilename());
+//        for (MultipartFile mf : files) {
+//            if (!mf.isEmpty()) {
+//                System.out.println(mf.getOriginalFilename());
+//                InputStream is = mf.getInputStream();
+//                int len = 0;
+//                byte[] by = new byte[1024];
+//                OutputStream os = new FileOutputStream("c:/" + mf.getOriginalFilename());
+//                BufferedInputStream bis = new BufferedInputStream(is);
+//                BufferedOutputStream bos = new BufferedOutputStream(os);
+//                while ((len = bis.read(by)) != -1) {
+//                    bos.write(by, 0, len);
+//                    bos.flush();
+//                }
+//            }
+//        }
 
-        //accountService.addReimbursementAccount();
+        accountService.applyReimbursementAccount(reimbursementAccountBean);
+        return jsonObject;
+    }
+
+    //取消、修改、审核报销单
+    @PostMapping("/operationReimbursementAccount")
+    public JSONObject operationReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        accountService.operationReimbursementAccount(reimbursementAccountBean);
         return jsonObject;
     }
 }
