@@ -17,7 +17,7 @@ public class InformationSheetBean implements Serializable {
     private String infId;
 
     //信息单类型
-    private String sheefType;
+    private String sheetType;
 
     //重要性级别
     private String degreeType;

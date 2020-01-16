@@ -65,7 +65,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void applyInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
-        if (StringUtils.isBlank(informationSheetBean.getSheefType())) throw new MessageException("信息单类型不能为空");
+        if (StringUtils.isBlank(informationSheetBean.getSheetType())) throw new MessageException("信息单类型不能为空");
         if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单重要程度不能为空");
         if (StringUtils.isBlank(informationSheetBean.getDeptSendId())) throw new MessageException("信息单发起部门不能为空");
         if (StringUtils.isBlank(informationSheetBean.getDeptRecId())) throw new MessageException("信息单接收部门不能为空");
@@ -85,6 +85,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     private void applyInformationSheet(InformationSheetBean informationSheetBean, List<JSONObject> list, boolean flag) throws Exception {
         List<EmployeeBean> employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getSenderId()));
         if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
+        EmployeeBean applyer = employeeBeans.get(0);
         EmployeeBean employeeBean = employeeBeans.get(0);
         JSONObject jsonObject = null;
         JSONObject data = null;
@@ -103,6 +104,50 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
             //申请人
             content = new JSONObject();
             content.put("value", employeeBean.getEmpName());
+            content.put("color", "#173177");
+            data.put("keyword1", content);
+
+            //申请主题
+            content = new JSONObject();
+            content.put("value", informationSheetBean.getTheme());
+            content.put("color", "#173177");
+            data.put("keyword2", content);
+
+            //信息单申请时间
+            content = new JSONObject();
+            content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean.getSendDate())));
+            content.put("color", "#173177");
+            data.put("keyword3", content);
+
+            //备注
+            content = new JSONObject();
+            content.put("value", flag ? "您已成功信息传递单信息传递单,请等待审核!" : "您已成功修改信息传递单,请等待审核!");
+            content.put("color", "#173177");
+            data.put("remark", content);
+
+            jsonObject.put("data", data);
+
+            list.add(jsonObject);
+        }
+
+        employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpId()));
+        if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
+        employeeBean = employeeBeans.get(0);
+        if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
+            //申请人消息
+            jsonObject = new JSONObject();
+            jsonObject.put("touser", employeeBean.getOpenId());
+            jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+            data = new JSONObject();
+
+            JSONObject content = new JSONObject();
+            content.put("value", flag ? "有一条信息传递单正在申请!" : "有一条信息传递单正在申请!");
+            content.put("color", "#173177");
+            data.put("first", content);
+
+            //申请人
+            content = new JSONObject();
+            content.put("value", applyer.getEmpName());
             content.put("color", "#173177");
             data.put("keyword1", content);
 
@@ -148,7 +193,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
 
             //申请人
             content = new JSONObject();
-            content.put("value", employeeBean.getEmpName());
+            content.put("value", applyer.getEmpName());
             content.put("color", "#173177");
             data.put("keyword1", content);
 
@@ -205,7 +250,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
                 //修改,通知申请人+审查人
                 informationSheetBean.setState("0");
                 if (StringUtils.isBlank(informationSheetBean.getInfId())) throw new MessageException("信息单ID不能为空");
-                if (StringUtils.isBlank(informationSheetBean.getSheefType())) throw new MessageException("信息单类型不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getSheetType())) throw new MessageException("信息单类型不能为空");
                 if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单重要程度不能为空");
                 if (StringUtils.isBlank(informationSheetBean.getDeptSendId())) throw new MessageException("信息单发起部门不能为空");
                 if (StringUtils.isBlank(informationSheetBean.getDeptRecId())) throw new MessageException("信息单接收部门不能为空");
