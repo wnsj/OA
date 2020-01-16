@@ -42,4 +42,80 @@
             AND INFS.INF_ID = #{infId}
         </if>
     </select>
+
+    <!--    添加信息单  -->
+    <insert id="addInformationSheet" useGeneratedKeys="true" keyProperty="infId">
+        INSERT INTO INFORMATION_SHEET (SHEET_TYPE,DEGREE_TYPE,SENDER_ID,EMP_SEND_ID,DEPT_SEND_ID,SEND_DATE,DEPT_REC_ID,EMP_REC_ID,EMP_ID
+                      ,THEME,CONTENT,REQUIRE_CONTENT,STATE)
+        VALUES (#{sheefType}, #{degreeType}, #{senderId}, #{empSendId},#{deptSendId},#{sendDate}, #{deptRecId}, #{empRecId}, #{empId},
+                #{theme}, #{content}, #{requireContent}, #{state})
+    </insert>
+
+    <!--    修改信息单-->
+    <update id="updateInformationSheet">
+        UPDATE INFORMATION_SHEET
+        SET
+        <trim suffixOverrides=",">
+            <if test="sheefType != null and sheefType != ''">
+                SHEET_TYPE = #{sheefType},
+            </if>
+            <if test="degreeType != null and degreeType != ''">
+                DEGREE_TYPE = #{degreeType},
+            </if>
+            <if test="senderId != null and senderId != ''">
+                SENDER_ID = #{senderId},
+            </if>
+            <if test="empSendId != null and empSendId != ''">
+                EMP_SEND_ID = #{empSendId},
+            </if>
+            <if test="deptSendId != null and deptSendId != ''">
+                DEPT_SEND_ID = #{deptSendId},
+            </if>
+            <if test="sendDate != null and sendDate != ''">
+                SEND_DATE = #{sendDate},
+            </if>
+            <if test="deptRecId != null and deptRecId != ''">
+                DEPT_REC_ID = #{deptRecId},
+            </if>
+            <if test="empRecId != null and empRecId != ''">
+                EMP_REC_ID = #{empRecId},
+            </if>
+            <if test="empId != null and empId != ''">
+                EMP_ID = #{empId},
+            </if>
+            <if test="theme != null and theme != ''">
+                THEME = #{theme},
+            </if>
+            <if test="content != null and content != ''">
+                CONTENT = #{content},
+            </if>
+            <if test="requireContent != null and requireContent != ''">
+                REQUIRE_CONTENT = #{requireContent},
+            </if>
+            <if test="sendAgree != null and sendAgree != ''">
+                SEND_AGREE = #{sendAgree},
+            </if>
+            <if test="sendContent != null and sendContent != ''">
+                SEND_CONTENT = #{sendContent},
+            </if>
+            <if test="sendAppDate != null and sendAppDate != ''">
+                SEND_APP_DATE = #{sendAppDate},
+            </if>
+            <if test="recAgree != null and recAgree != ''">
+                REC_AGREE = #{recAgree},
+            </if>
+            <if test="recContent != null and recContent != ''">
+                REC_CONTENT = #{recContent},
+            </if>
+            <if test="recAppDate != null and recAppDate != ''">
+                REC_APP_DATE = #{recAppDate},
+            </if>
+            <if test="state != null and state != ''">
+                STATE = #{state},
+            </if>
+        </trim>
+        WHERE INF_ID = #{infId}
+    </update>
+
+
 </mapper>
