@@ -384,5 +384,24 @@
             AND P.POS_NAME = #{posName}
         </if>
     </select>
+
+    <!--  查询部门负责人  -->
+    <select id="queryDeptDrector" resultType="com.jiubo.oa.bean.EmployeeBean">
+        SELECT
+        E.EMP_ID,E.EMP_NAME, E.SEX, E.IDCARD, E.BIRTHDAY, E.NATIONALITY, E.POLITICAL,
+        E.NATIVE_PLACE, E.PHONE, E.PERMANENT_ADDRESS, E.ADDRESS, E.EMERGENCY_CONTACT,
+        E.EMERGENCY_PHONE, E.CONTRACT_ATTRIBUTE, E.CONTRACT_PERIOD, E.SUBSCRIPT_1,
+        E.SUBSCRIPT_2, E.SUBSCRIPT_3, E.SUBSCRIPT_4, E.ACC_NAME, E.DEPT_ID,E.LEADER_ID,
+        E.POS_ID, E.ENTRY_DATE, E.FORMAL_DATE, E.LEAVEL_DATE, E.STATE, E.OPEN_ID,D.DEPT_NAME,P.POS_NAME
+        FROM EMPLOYEE E
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        WHERE 1 = 1
+        <if test="deptId != null and deptId != ''">
+            AND E.DEPT_ID = #{deptId} AND P.LEVAL='2'
+        </if>
+    </select>
 </mapper>
 

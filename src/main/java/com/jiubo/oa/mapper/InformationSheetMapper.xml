@@ -4,30 +4,42 @@
 
     <!--    查询信息单   -->
     <select id="queryInformationSheet" resultType="com.jiubo.oa.bean.InformationSheetBean">
-        SELECT INF_ID
-        ,SHEET_TYPE
-        ,DEGREE_TYPE
-        ,SENDER_ID
-        ,EMP_SEND_ID
-        ,DEPT_SEND_ID
-        ,SEND_DATE
-        ,DEPT_REC_ID
-        ,EMP_REC_ID
-        ,EMP_ID
-        ,THEME
-        ,CONTENT
-        ,REQUIRE_CONTENT
-        ,SEND_AGREE
-        ,SEND_CONTENT
-        ,SEND_APP_DATE
-        ,REC_AGREE
-        ,REC_CONTENT
-        ,REC_APP_DATE
-        ,STATE
-        FROM information_sheet
+        SELECT INFS.INF_ID
+        ,INFS.SHEET_TYPE
+        ,INFS.DEGREE_TYPE
+        ,INFS.SENDER_ID
+        ,E1.EMP_NAME AS SENDER_NAME
+        ,INFS.EMP_SEND_ID
+        ,E2.EMP_NAME AS EMP_SEND_NAME
+        ,INFS.DEPT_SEND_ID
+        ,DEPT1.DEPT_NAME AS DEPT_SEND_NAME
+        ,INFS.SEND_DATE
+        ,INFS.DEPT_REC_ID
+        ,DEPT2.DEPT_NAME AS DEPT_REC_NAME
+        ,INFS.EMP_REC_ID
+        ,E3.EMP_NAME AS EMP_REC_NAME
+        ,INFS.EMP_ID
+        ,E4.EMP_NAME EMP_NAME
+        ,INFS.THEME
+        ,INFS.CONTENT
+        ,INFS.REQUIRE_CONTENT
+        ,INFS.SEND_AGREE
+        ,INFS.SEND_CONTENT
+        ,INFS.SEND_APP_DATE
+        ,INFS.REC_AGREE
+        ,INFS.REC_CONTENT
+        ,INFS.REC_APP_DATE
+        ,INFS.STATE
+        FROM INFORMATION_SHEET INFS
+        LEFT JOIN EMPLOYEE E1 ON E1.EMP_ID = INFS.SENDER_ID
+        LEFT JOIN EMPLOYEE E2 ON E2.EMP_ID = INFS.EMP_SEND_ID
+        LEFT JOIN EMPLOYEE E3 ON E3.EMP_ID = INFS.EMP_REC_ID
+        LEFT JOIN EMPLOYEE E4 ON E4.EMP_ID = INFS.EMP_ID
+        LEFT JOIN DEPARTMENT DEPT1 ON DEPT1.DEPT_ID = INFS.DEPT_SEND_ID
+        LEFT JOIN DEPARTMENT DEPT2 ON DEPT2.DEPT_ID = INFS.DEPT_REC_ID
         WHERE 1 = 1
         <if test="infId != null and infId != ''">
-            AND INF_ID = #{infId}
+            AND INFS.INF_ID = #{infId}
         </if>
     </select>
 </mapper>

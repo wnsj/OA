@@ -19,6 +19,9 @@ public interface EmployeeService extends IService<EmployeeBean> {
     //查询员工
     public List<EmployeeBean> queryEmployee(EmployeeBean employeeBean);
 
+    //查询部门负责人
+    public List<EmployeeBean> queryDeptDrector(EmployeeBean employeeBean);
+
     //用户登录
     public JSONObject login(EmployeeBean employeeBean) throws Exception;
 

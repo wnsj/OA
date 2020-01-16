@@ -23,7 +23,7 @@ public class InformationSheetBean {
     private String senderId;
 
     //发起人名字
-    private String sendName;
+    private String senderName;
 
     //发起负责人ID
     private String empSendId;
@@ -34,11 +34,17 @@ public class InformationSheetBean {
     //发起人部门ID
     private String deptSendId;
 
+    //发起人部门名字
+    private String deptSendName;
+
     //发起时间
     private String sendDate;
 
     //接收部门ID
     private String deptRecId;
+
+    //接收部门名字
+    private String deptRecName;
 
     //接收负责人ID
     private String empRecId;

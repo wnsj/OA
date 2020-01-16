@@ -179,15 +179,15 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     }
 
 
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public void operationInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
-//        List<JSONObject> list = new ArrayList<JSONObject>();
-//        operation(informationSheetBean, list);
-//        for (JSONObject jsonObject : list) {
-//            wxSendMessageService.sendMessage(jsonObject);
-//        }
-//    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void operationInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
+        List<JSONObject> list = new ArrayList<JSONObject>();
+        operation(informationSheetBean, list);
+        for (JSONObject jsonObject : list) {
+            wxSendMessageService.sendMessage(jsonObject);
+        }
+    }
 
     //信息单 1-取消、修改、审核
     private void operation(InformationSheetBean informationSheetBean, List<JSONObject> list) throws Exception {
@@ -244,7 +244,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
 
                     //申请人
                     content = new JSONObject();
-                    content.put("value", informationSheetBean.getSendName());
+                    content.put("value", informationSheetBean.getSenderName());
                     content.put("color", "#173177");
                     data.put("keyword1", content);
 
@@ -301,7 +301,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
 
                     //申请人
                     content = new JSONObject();
-                    content.put("value", informationSheetBean.getSendName());
+                    content.put("value", informationSheetBean.getSenderName());
                     content.put("color", "#173177");
                     data.put("keyword1", content);
 
