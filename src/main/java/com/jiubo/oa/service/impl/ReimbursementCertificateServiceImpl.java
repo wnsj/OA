@@ -57,6 +57,12 @@ public class ReimbursementCertificateServiceImpl extends ServiceImpl<Reimburseme
     }
 
     @Override
+    public void updateReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean) throws Exception {
+        if (reimbursementCertificateDao.updateReimbursementCertificate(reimbursementCertificateBean) <= 0)
+            throw new MessageException("操作失败!");
+    }
+
+    @Override
     public List<ReimbursementCertificateBean> queryReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean) throws Exception {
         return reimbursementCertificateDao.queryReimbursementCertificate(reimbursementCertificateBean);
     }

@@ -7,6 +7,7 @@ import com.jiubo.oa.service.ReimbursementAccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @desc:
@@ -23,11 +24,12 @@ public class ReimbursementAccountAction {
 
     //添加报销单
     @PostMapping(value = "/addReimbursementAccount")
-    public JSONObject addReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception {
+    public JSONObject addReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean, MultipartFile[] file) throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
         System.out.println(reimbursementAccountBean);
+        System.out.println("file:" + file.length);
         //System.out.println(reimbursementAccountBean.getFile()[0].getOriginalFilename());
 //        for (MultipartFile mf : files) {
 //            if (!mf.isEmpty()) {
@@ -45,17 +47,17 @@ public class ReimbursementAccountAction {
 //            }
 //        }
 
-        accountService.applyReimbursementAccount(reimbursementAccountBean);
+        accountService.applyReimbursementAccount(reimbursementAccountBean,file);
         return jsonObject;
     }
 
     //取消、修改、审核报销单
     @PostMapping("/operationReimbursementAccount")
-    public JSONObject operationReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception {
+    public JSONObject operationReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean, MultipartFile[] file) throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
-        accountService.operationReimbursementAccount(reimbursementAccountBean);
+        accountService.operationReimbursementAccount(reimbursementAccountBean,file);
         return jsonObject;
     }
 }

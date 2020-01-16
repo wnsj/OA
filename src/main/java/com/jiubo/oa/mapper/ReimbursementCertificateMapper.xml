@@ -19,11 +19,12 @@
         <if test="raId != null and raId != ''">
             AND RA_ID = #{raId}
         </if>
+        ORDER BY RC_ID
     </select>
 
     <!--    删除凭证-->
     <delete id="deleteReimbursementCertificate">
-        DELETE  FROM REIMBURSEMENT_CERTIFICATE
+        DELETE FROM REIMBURSEMENT_CERTIFICATE
         WHERE
         <if test="rcId != null and rcId != ''">
             RC_ID = #{rcId}
@@ -32,4 +33,11 @@
             RA_ID = #{raId}
         </if>
     </delete>
+
+    <!--    修改凭证-->
+    <update id="updateReimbursementCertificate">
+        update REIMBURSEMENT_CERTIFICATE
+        SET IMG = #{img}
+        WHERE RC_ID = #{rcId}
+    </update>
 </mapper>

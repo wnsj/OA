@@ -2,6 +2,7 @@ package com.jiubo.oa.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jiubo.oa.bean.ReimbursementAccountBean;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,8 +24,8 @@ public interface ReimbursementAccountService extends IService<ReimbursementAccou
     public List<ReimbursementAccountBean> queryReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean)throws Exception;
 
     //添加申请
-    public void applyReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception;
+    public void applyReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean, MultipartFile[] file) throws Exception;
 
     //取消，审核申请
-    public void operationReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception;
+    public void operationReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean, MultipartFile[] file) throws Exception;
 }
