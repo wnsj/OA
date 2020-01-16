@@ -4,13 +4,13 @@
 
     <!--    添加凭证-->
     <insert id="addReimbursementCertificate" useGeneratedKeys="true" keyProperty="rcId">
-        INSERT INTO REIMBURSEMENT_CERTIFICATE (RC_ID, RA_ID, IMG)
-        VALUES (#{rcId}, #{raId}, #{img})
+        INSERT INTO REIMBURSEMENT_CERTIFICATE (RC_ID, RA_ID, IMG, FILE_NAME)
+        VALUES (#{rcId}, #{raId}, #{img}, #{fileName})
     </insert>
 
     <!--    查询凭证-->
     <select id="queryReimbursementCertificate" resultType="com.jiubo.oa.bean.ReimbursementCertificateBean">
-        SELECT RC_ID, RA_ID, IMG
+        SELECT RC_ID, RA_ID, IMG,FILE_NAME
         FROM REIMBURSEMENT_CERTIFICATE
         WHERE 1 = 1
         <if test="rcId != null and rcId != ''">
@@ -37,7 +37,8 @@
     <!--    修改凭证-->
     <update id="updateReimbursementCertificate">
         update REIMBURSEMENT_CERTIFICATE
-        SET IMG = #{img}
+        SET IMG       = #{img},
+            FILE_NAME = #{fileName}
         WHERE RC_ID = #{rcId}
     </update>
 </mapper>

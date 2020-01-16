@@ -78,7 +78,17 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
     public List<ReimbursementAccountBean> queryReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception {
         if (StringUtils.isNotBlank(reimbursementAccountBean.getCreateEndDate()))
             reimbursementAccountBean.setCreateEndDate(TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.dateAdd(TimeUtil.parseAnyDate(reimbursementAccountBean.getCreateEndDate()), TimeUtil.UNIT_DAY, 1)));
-        return reimbursementAccountDao.queryReimbursementAccount(reimbursementAccountBean);
+        List<ReimbursementAccountBean> reimbursementAccountBeans = reimbursementAccountDao.queryReimbursementAccount(reimbursementAccountBean);
+        if ("1".equals(reimbursementAccountBean.getNeedCertificate())) {
+            for (ReimbursementAccountBean accountBean : reimbursementAccountBeans) {
+                List<ReimbursementCertificateBean> certificateBeans = certificateService.queryReimbursementCertificate(new ReimbursementCertificateBean().setRaId(accountBean.getRaId()));
+                for (ReimbursementCertificateBean certificateBean : certificateBeans){
+                    certificateBean.setImg("/fileAction/getFile?type=IMG&rcId=" + certificateBean.getRcId());
+                }
+                accountBean.setReimbursementCertificateBeans(certificateBeans);
+            }
+        }
+        return reimbursementAccountBeans;
     }
 
     @Override
@@ -89,13 +99,25 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
         //if (StringUtils.isBlank(forgetCardBean.getApprover())) throw new MessageException("批准人不能为空！");
         List<JSONObject> list = new ArrayList<JSONObject>();
         addReimbursementAccount(reimbursementAccountBean);
+        saveFile(reimbursementAccountBean,file);
+
+        applyReimbursementAccountMsg(reimbursementAccountBean, list, true);
+        for (JSONObject jsonObject : list) {
+            wxSendMessageService.sendMessage(jsonObject);
+        }
+    }
+
+    //保存文件
+    private void saveFile(ReimbursementAccountBean reimbursementAccountBean, MultipartFile[] file)throws Exception {
         if (file != null) {
             for (MultipartFile multipartFile : file) {
+                //原文件名
+                String fileName = multipartFile.getOriginalFilename();
                 ReimbursementCertificateBean reimbursementCertificateBean = new ReimbursementCertificateBean();
                 reimbursementCertificateBean.setRaId(reimbursementAccountBean.getRaId());
+                reimbursementCertificateBean.setFileName(fileName);
                 certificateService.addReimbursementCertificate(reimbursementCertificateBean);
                 //生成文件名（凭证id + 报销id ）
-                String fileName = multipartFile.getOriginalFilename();
                 fileName = fileName.substring(fileName.lastIndexOf("."));
 
                 String path = oADir.endsWith("/") ? oADir.concat("certificateDir/") : oADir.concat("/".concat("certificateDir/"));
@@ -128,15 +150,10 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
                 }
             }
         }
-        applyReimbursementAccountMsg(reimbursementAccountBean, list, true);
-        for (JSONObject jsonObject : list) {
-            wxSendMessageService.sendMessage(jsonObject);
-        }
     }
 
     //申请人消息
-    private void applyReimbursementAccountMsg(ReimbursementAccountBean
-                                                      reimbursementAccountBean, List<JSONObject> list, boolean flag) throws Exception {
+    private void applyReimbursementAccountMsg(ReimbursementAccountBean reimbursementAccountBean, List<JSONObject> list, boolean flag) throws Exception {
         List<EmployeeBean> employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(reimbursementAccountBean.getEmpId()));
         if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
         EmployeeBean employeeBean = employeeBeans.get(0);
@@ -263,8 +280,13 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
                 reimbursementAccountBean.setRaId(reimbursementAccount.getRaId());
                 reimbursementAccountBean.setCreateDate(reimbursementAccount.getCreateDate());
                 updateReimbursementAccount(reimbursementAccountBean);
+                //先删除文件，再保存文件
                 if (file != null) {
-
+                    List<ReimbursementCertificateBean> reimbursementCertificateBeans = certificateService.queryReimbursementCertificate(new ReimbursementCertificateBean().setRaId(reimbursementAccountBean.getRaId()));
+                    for (ReimbursementCertificateBean certificateBean : reimbursementCertificateBeans) {
+                        certificateService.deleteReimbursementCertificate(certificateBean);
+                    }
+                    saveFile(reimbursementAccountBean, file);
                 }
                 applyReimbursementAccountMsg(reimbursementAccountBean, list, false);
             }
@@ -276,11 +298,11 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(reimbursementAccountBean.getExaminerAdv())) {
                 //不同意，发消息给申请人
-                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setExaminerAdv("2").setExaminerRemark(reimbursementAccountBean.getExaminerRemark()).setExaminerDate(nowStr));
+                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setExaminerAdv("2").setExaminerRemark(reimbursementAccountBean.getExaminerRemark()).setExaminerDate(nowStr).setState("4"));
                 operationReimbursementEmpMsg(reimbursementAccount, list);
             } else {
                 //同意，通知审核人审核
-                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setExaminerAdv("1").setExaminerRemark(reimbursementAccountBean.getExaminerRemark()).setExaminerDate(nowStr));
+                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setExaminerAdv("1").setExaminerRemark(reimbursementAccountBean.getExaminerRemark()).setExaminerDate(nowStr).setState("2"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(reimbursementAccount.getAuditor()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                 EmployeeBean auditor = employeeBeans.get(0);
@@ -335,12 +357,15 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(reimbursementAccountBean.getAuditorAdv())) {
                 //不同意，发消息给申请人
-                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setAuditorAdv("2").setAuditorRemark(reimbursementAccountBean.getAuditorRemark()).setAuditorDate(nowStr));
+                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setAuditorAdv("2").setAuditorRemark(reimbursementAccountBean.getAuditorRemark()).setAuditorDate(nowStr).setState("4"));
                 operationReimbursementEmpMsg(reimbursementAccount, list);
             } else {
                 //同意，通知批准人审核
-                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setAuditorAdv("1").setAuditorRemark(reimbursementAccountBean.getAuditorRemark()).setAuditorDate(nowStr));
+                ReimbursementAccountBean accountBean = new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setAuditorAdv("1").setAuditorRemark(reimbursementAccountBean.getAuditorRemark()).setAuditorDate(nowStr);
+                accountBean.setState("2");
                 if (StringUtils.isBlank(reimbursementAccount.getApprover())) {
+                    accountBean.setState("3");
+                    updateReimbursementAccount(accountBean);
                     employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(reimbursementAccount.getEmpId()));
                     if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
                     EmployeeBean employeeBean = employeeBeans.get(0);
@@ -384,6 +409,7 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
                         list.add(jsonObject);
                     }
                 } else {
+                    updateReimbursementAccount(accountBean);
                     employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(reimbursementAccount.getApprover()));
                     if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                     EmployeeBean auditor = employeeBeans.get(0);
@@ -493,10 +519,8 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
 
     }
 
-
     //不同意申请人消息
-    private void operationReimbursementEmpMsg(ReimbursementAccountBean
-                                                      reimbursementAccountBean, List<JSONObject> list) throws Exception {
+    private void operationReimbursementEmpMsg(ReimbursementAccountBean reimbursementAccountBean, List<JSONObject> list) throws Exception {
         List<EmployeeBean> employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(reimbursementAccountBean.getEmpId()));
         if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
         EmployeeBean employeeBean = employeeBeans.get(0);

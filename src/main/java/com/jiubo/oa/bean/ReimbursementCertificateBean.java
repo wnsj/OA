@@ -18,4 +18,6 @@ public class ReimbursementCertificateBean implements Serializable {
 
     private String img;
 
+    private String fileName;
+
 }
