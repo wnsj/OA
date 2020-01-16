@@ -36,6 +36,10 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     @Value("${modifyInformationSheetUrl}")
     private String modifyInformationSheetUrl;
 
+    //信息申请单审核界面
+    @Value("${examineInformationSheetUrl}")
+    private String examineInformationSheetUrl;
+
 
     @Override
     public List<InformationSheetBean> queryInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
@@ -53,13 +57,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
-        if (StringUtils.isBlank(informationSheetBean.getInfId())) throw new MessageException("信息单ID不能为空");
-        if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单类型不能为空");
-        if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单重要程度不能为空");
-        if (StringUtils.isBlank(informationSheetBean.getDeptSendId())) throw new MessageException("信息单发起部门不能为空");
-        if (StringUtils.isBlank(informationSheetBean.getDeptRecId())) throw new MessageException("信息单接收部门不能为空");
-        if (StringUtils.isBlank(informationSheetBean.getTheme())) throw new MessageException("信息单主题不能为空");
-        if (StringUtils.isBlank(informationSheetBean.getContent())) throw new MessageException("信息单内容不能为空");
+
 
         if (informationSheetDao.updateInformationSheet(informationSheetBean) <= 0) throw new MessageException("操作失败!");
     }
@@ -67,7 +65,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void applyInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
-        if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单类型不能为空");
+        if (StringUtils.isBlank(informationSheetBean.getSheefType())) throw new MessageException("信息单类型不能为空");
         if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单重要程度不能为空");
         if (StringUtils.isBlank(informationSheetBean.getDeptSendId())) throw new MessageException("信息单发起部门不能为空");
         if (StringUtils.isBlank(informationSheetBean.getDeptRecId())) throw new MessageException("信息单接收部门不能为空");
@@ -140,7 +138,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
             jsonObject = new JSONObject();
             jsonObject.put("touser", examiner.getOpenId());
             jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
-            jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
+            jsonObject.put("url", examineInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
             data = new JSONObject();
 
             JSONObject content = new JSONObject();
@@ -204,129 +202,135 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
                 //取消信息单
                 updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setState("1"));
             } else {
-                //修改忘记打卡,通知申请人+审查人
+                //修改,通知申请人+审查人
                 informationSheetBean.setState("0");
+                if (StringUtils.isBlank(informationSheetBean.getInfId())) throw new MessageException("信息单ID不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getSheefType())) throw new MessageException("信息单类型不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单重要程度不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getDeptSendId())) throw new MessageException("信息单发起部门不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getDeptRecId())) throw new MessageException("信息单接收部门不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getTheme())) throw new MessageException("信息单主题不能为空");
+                if (StringUtils.isBlank(informationSheetBean.getContent())) throw new MessageException("信息单内容不能为空");
                 informationSheetBean.setSendDate(informationSheetBean1.getSendDate());
                 System.out.println("informationSheetBean:"+informationSheetBean.toString());
                 updateInformationSheet(informationSheetBean);
                 applyInformationSheet(informationSheetBean, list, false);
-                if (StringUtils.isNotBlank(informationSheetBean.getSendAgree())) {
-                    //发起部门负责人审核
-                    if (!"0".equals(informationSheetBean1.getSendAgree())) throw new MessageException("已完成审核,不可重复审核!");
-                    if (!informationSheetBean.getEmpSendId().equals(informationSheetBean1.getEmpSendId()))
-                        throw new MessageException("不可代替他人审核!");
-                    String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
-                    if ("2".equals(informationSheetBean.getSendAgree())) {
-                        //不同意，发消息给申请人
-                        updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("2").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr));
-                        operationInformationSheetEmpMsg(informationSheetBean, list);
-                    } else {
-                        //发起部门负责人同意，通知接收部门负责人
-                        updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("1").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr));
+            }
+        }else if (StringUtils.isNotBlank(informationSheetBean.getSendAgree())) {
+            //发起部门负责人审核
+            if (!"0".equals(informationSheetBean1.getSendAgree())) throw new MessageException("已完成审核,不可重复审核!");
+            if (!informationSheetBean.getEmpSendId().equals(informationSheetBean1.getEmpSendId()))
+                throw new MessageException("不可代替他人审核!");
+            String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
+            if ("2".equals(informationSheetBean.getSendAgree())) {
+                //不同意，发消息给申请人
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("2").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr));
+                operationInformationSheetEmpMsg(informationSheetBean, list);
+            } else {
+                //发起部门负责人同意，通知接收部门负责人
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("1").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr));
 
-                        employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
-                        if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
-                        EmployeeBean auditor = employeeBeans.get(0);
-                        if (StringUtils.isNotBlank(auditor.getOpenId())) {
-                            //审核人消息
-                            jsonObject = new JSONObject();
-                            jsonObject.put("touser", auditor.getOpenId());
-                            jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
-                            jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
-                            data = new JSONObject();
+                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
+                if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
+                EmployeeBean auditor = employeeBeans.get(0);
+                if (StringUtils.isNotBlank(auditor.getOpenId())) {
+                    //审核人消息
+                    jsonObject = new JSONObject();
+                    jsonObject.put("touser", auditor.getOpenId());
+                    jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
+                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                    data = new JSONObject();
 
-                            JSONObject content = new JSONObject();
-                            content.put("value", "有新的信息传递单需要审核!");
-                            content.put("color", "#173177");
-                            data.put("first", content);
+                    JSONObject content = new JSONObject();
+                    content.put("value", "有新的信息传递单需要审核!");
+                    content.put("color", "#173177");
+                    data.put("first", content);
 
-                            //申请人
-                            content = new JSONObject();
-                            content.put("value", informationSheetBean.getSenderName());
-                            content.put("color", "#173177");
-                            data.put("keyword1", content);
+                    //申请人
+                    content = new JSONObject();
+                    content.put("value", informationSheetBean.getSenderName());
+                    content.put("color", "#173177");
+                    data.put("keyword1", content);
 
-                            //请假类型
-                            content = new JSONObject();
-                            content.put("value", informationSheetBean.getTheme());
-                            content.put("color", "#173177");
-                            data.put("keyword2", content);
+                    //请假类型
+                    content = new JSONObject();
+                    content.put("value", informationSheetBean.getTheme());
+                    content.put("color", "#173177");
+                    data.put("keyword2", content);
 
-                            //请假时间
-                            content = new JSONObject();
-                            content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean.getSendDate())));
-                            content.put("color", "#173177");
-                            data.put("keyword3", content);
+                    //请假时间
+                    content = new JSONObject();
+                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean.getSendDate())));
+                    content.put("color", "#173177");
+                    data.put("keyword3", content);
 
-                            //备注
-                            content = new JSONObject();
-                            content.put("value", "有新的信息传递单需要审核,点击查看详情!");
-                            content.put("color", "#173177");
-                            data.put("remark", content);
+                    //备注
+                    content = new JSONObject();
+                    content.put("value", "有新的信息传递单需要审核,点击查看详情!");
+                    content.put("color", "#173177");
+                    data.put("remark", content);
 
-                            jsonObject.put("data", data);
+                    jsonObject.put("data", data);
 
-                            list.add(jsonObject);
-                        }
-                    }
-                } else if (StringUtils.isNotBlank(informationSheetBean1.getRecAgree())) {
-                    //信息单接收部门审核
-                    if (!"0".equals(informationSheetBean1.getRecAgree())) throw new MessageException("已完成审核,不可重复审核!");
-                    if (!informationSheetBean.getEmpRecId().equals(informationSheetBean1.getEmpRecId()))
-                        throw new MessageException("不可代替他人审核!");
-                    String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
-                    if ("2".equals(informationSheetBean.getRecAgree())) {
-                        //不同意，发消息给申请人
-                        updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("2").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr));
-                        operationInformationSheetEmpMsg(informationSheetBean, list);
-                    } else {
-                        //同意，通知接收部门负责人审核
-                        updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("1").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr));
-                        employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
-                        if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
-                        EmployeeBean auditor = employeeBeans.get(0);
-                        if (StringUtils.isNotBlank(auditor.getOpenId())) {
-                            //审核人消息
-                            jsonObject = new JSONObject();
-                            jsonObject.put("touser", auditor.getOpenId());
-                            jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
-                            jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
-                            data = new JSONObject();
+                    list.add(jsonObject);
+                }
+            }
+        } else if (StringUtils.isNotBlank(informationSheetBean.getRecAgree())) {
+            //信息单接收部门审核
+            if (!"0".equals(informationSheetBean1.getRecAgree())) throw new MessageException("已完成审核,不可重复审核!");
+            if (!informationSheetBean.getEmpRecId().equals(informationSheetBean1.getEmpRecId()))
+                throw new MessageException("不可代替他人审核!");
+            String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
+            if ("2".equals(informationSheetBean.getRecAgree())) {
+                //不同意，发消息给申请人
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("2").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr));
+                operationInformationSheetEmpMsg(informationSheetBean, list);
+            } else {
+                //同意，通知接收部门负责人审核
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("1").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr));
+                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
+                if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
+                EmployeeBean auditor = employeeBeans.get(0);
+                if (StringUtils.isNotBlank(auditor.getOpenId())) {
+                    //审核人消息
+                    jsonObject = new JSONObject();
+                    jsonObject.put("touser", auditor.getOpenId());
+                    jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
+                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                    data = new JSONObject();
 
-                            JSONObject content = new JSONObject();
-                            content.put("value", "有新的信息传递单需要审核!");
-                            content.put("color", "#173177");
-                            data.put("first", content);
+                    JSONObject content = new JSONObject();
+                    content.put("value", "有新的信息传递单需要审核!");
+                    content.put("color", "#173177");
+                    data.put("first", content);
 
-                            //申请人
-                            content = new JSONObject();
-                            content.put("value", informationSheetBean.getSenderName());
-                            content.put("color", "#173177");
-                            data.put("keyword1", content);
+                    //申请人
+                    content = new JSONObject();
+                    content.put("value", informationSheetBean.getSenderName());
+                    content.put("color", "#173177");
+                    data.put("keyword1", content);
 
-                            //信息单主题
-                            content = new JSONObject();
-                            content.put("value", informationSheetBean.getTheme());
-                            content.put("color", "#173177");
-                            data.put("keyword2", content);
+                    //信息单主题
+                    content = new JSONObject();
+                    content.put("value", informationSheetBean.getTheme());
+                    content.put("color", "#173177");
+                    data.put("keyword2", content);
 
-                            //信息单发起时间
-                            content = new JSONObject();
-                            content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean.getSendDate())));
-                            content.put("color", "#173177");
-                            data.put("keyword3", content);
+                    //信息单发起时间
+                    content = new JSONObject();
+                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean.getSendDate())));
+                    content.put("color", "#173177");
+                    data.put("keyword3", content);
 
-                            //备注
-                            content = new JSONObject();
-                            content.put("value", "有新的信息传递单需要审核,点击查看详情!");
-                            content.put("color", "#173177");
-                            data.put("remark", content);
+                    //备注
+                    content = new JSONObject();
+                    content.put("value", "有新的信息传递单需要审核,点击查看详情!");
+                    content.put("color", "#173177");
+                    data.put("remark", content);
 
-                            jsonObject.put("data", data);
+                    jsonObject.put("data", data);
 
-                            list.add(jsonObject);
-                        }
-                    }
+                    list.add(jsonObject);
                 }
             }
         }
