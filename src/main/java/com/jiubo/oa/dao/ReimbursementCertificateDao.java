@@ -21,4 +21,7 @@ public interface ReimbursementCertificateDao extends BaseMapper<ReimbursementCer
 
     //删除凭证
     public int deleteReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean);
+
+    //修改凭证
+    public int updateReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean);
 }

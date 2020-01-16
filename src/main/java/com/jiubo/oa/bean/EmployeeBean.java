@@ -128,6 +128,10 @@ public class EmployeeBean implements Serializable {
     //上级姓名
     private String leaderName;
 
+    private String deptLevel;
+
+    private String posLeval;
+
     //==================学历信息====================
     private EmpEducationBean empEducationBean;
 

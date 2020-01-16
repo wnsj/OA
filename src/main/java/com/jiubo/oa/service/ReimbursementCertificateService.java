@@ -19,6 +19,9 @@ public interface ReimbursementCertificateService extends IService<ReimbursementC
     //删除凭证
     public void deleteReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean) throws Exception;
 
+    //修改凭证
+    public void updateReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean) throws Exception;
+
     //查询凭证
     public List<ReimbursementCertificateBean> queryReimbursementCertificate(ReimbursementCertificateBean reimbursementCertificateBean) throws Exception;
 }
