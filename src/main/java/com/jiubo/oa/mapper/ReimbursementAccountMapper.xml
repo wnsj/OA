@@ -16,7 +16,46 @@
 
     <!--    查询报销-->
     <select id="queryReimbursementAccount" resultType="com.jiubo.oa.bean.ReimbursementAccountBean">
-        <include refid="queryRASQL"/>
+        SELECT RA.RA_ID,
+        RA.EMP_ID,
+        RA.CREATE_DATE,
+        RA.RA_REASON,
+        RA.MONEY,
+        RA.STATE,
+        RA.EXAMINER,
+        RA.EXAMINER_ADV,
+        RA.EXAMINER_DATE,
+        RA.AUDITOR,
+        RA.AUDITOR_ADV,
+        RA.AUDITOR_DATE,
+        RA.APPROVER,
+        RA.APPROVER_ADV,
+        RA.APPROVER_DATE,
+        RA.EXAMINER_REMARK,
+        RA.AUDITOR_REMARK,
+        RA.APPROVER_REMARK,
+        E.EMP_NAME,
+        D.DEPT_ID,
+        D.DEPT_NAME,
+        P.POS_ID,
+        P.POS_NAME,
+        EM.EMP_NAME EXAMINER_NAME,
+        EMP.EMP_NAME AUDITOR_NAME,
+        EMPL.EMP_NAME APPROVER_NAME
+        FROM REIMBURSEMENT_ACCOUNT RA
+        LEFT JOIN EMPLOYEE E
+        ON E.EMP_ID = RA.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON D.DEPT_ID = E.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = RA.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = RA.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = RA.APPROVER
+        WHERE 1 = 1
         <if test="raId != null and raId != ''">
             AND RA.RA_ID = #{raId}
         </if>
@@ -96,99 +135,4 @@
         </trim>
         WHERE RA_ID = #{raId}
     </update>
-
-<!--    <select id="queryReimbursementAccountByState" resultType="com.jiubo.oa.bean.ReimbursementAccountBean">-->
-<!--        <choose>-->
-<!--            <when test="advState == null or advState == '' or advState == 0">-->
-<!--                <include refid="queryRASQL"/>-->
-<!--                <if test="raId != null and raId != ''">-->
-<!--                    AND RA.RA_ID = #{raId}-->
-<!--                </if>-->
-<!--                <if test="empName != null and empName != ''">-->
-<!--                    AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')-->
-<!--                </if>-->
-<!--                <if test="deptId != null and deptId != ''">-->
-<!--                    AND E.EMP_ID = #{deptId}-->
-<!--                </if>-->
-<!--                <if test="state != null and state != ''">-->
-<!--                    AND RA.STATE = #{state}-->
-<!--                </if>-->
-<!--                <if test="createBegDate != null and createBegDate != '' ">-->
-<!--                    AND RA.CREATE_DATE >= #{createBegDate}-->
-<!--                </if>-->
-<!--                <if test="createEndDate != null and createEndDate != ''">-->
-<!--                    AND RA.CREATE_DATE &lt; #{createEndDate}-->
-<!--                </if>-->
-<!--                ORDER BY RA.RA_ID-->
-<!--            </when>-->
-<!--            <otherwise>-->
-<!--                <include refid="queryRASQL"/>-->
-<!--                <if test="advState == 2">-->
-<!--                    AND RA.STATE != 1-->
-<!--                    AND (RA.APPROVER IS NULL OR RA.APPROVER = '')-->
-<!--                    AND RA.EXAMINER_ADV = 0 OR RA.EXAMINER_ADV = 1-->
-<!--                    AND RA.AUDITOR_ADV = 0-->
-<!--                </if>-->
-<!--                <if test="advState == 3">-->
-
-<!--                </if>-->
-<!--                UNION-->
-<!--                <include refid="queryRASQL"/>-->
-<!--                <if test="advState == 2">-->
-<!--                    AND RA.STATE != 1-->
-<!--                    AND RA.APPROVER IS NOT NULL-->
-<!--                    AND RA.APPROVER != ''-->
-<!--                    AND RA.EXAMINER_ADV = 0 OR RA.EXAMINER_ADV = 1-->
-<!--                    OR RA.AUDITOR_ADV = 0 OR RA.AUDITOR_ADV = 1-->
-<!--                    OR RA.APPROVER_ADV = 0-->
-<!--                </if>-->
-<!--                <if test="advState == 3">-->
-
-<!--                </if>-->
-<!--            </otherwise>-->
-<!--        </choose>-->
-<!--    </select>-->
-
-    <sql id="queryRASQL">
-        SELECT RA.RA_ID,
-               RA.EMP_ID,
-               RA.CREATE_DATE,
-               RA.RA_REASON,
-               RA.MONEY,
-               RA.STATE,
-               RA.EXAMINER,
-               RA.EXAMINER_ADV,
-               RA.EXAMINER_DATE,
-               RA.AUDITOR,
-               RA.AUDITOR_ADV,
-               RA.AUDITOR_DATE,
-               RA.APPROVER,
-               RA.APPROVER_ADV,
-               RA.APPROVER_DATE,
-               RA.EXAMINER_REMARK,
-               RA.AUDITOR_REMARK,
-               RA.APPROVER_REMARK,
-               E.EMP_NAME,
-               D.DEPT_ID,
-               D.DEPT_NAME,
-               P.POS_ID,
-               P.POS_NAME,
-               EM.EMP_NAME   EXAMINER_NAME,
-               EMP.EMP_NAME  AUDITOR_NAME,
-               EMPL.EMP_NAME APPROVER_NAME
-        FROM REIMBURSEMENT_ACCOUNT RA
-                 LEFT JOIN EMPLOYEE E
-                           ON E.EMP_ID = RA.EMP_ID
-                 LEFT JOIN DEPARTMENT D
-                           ON D.DEPT_ID = E.DEPT_ID
-                 LEFT JOIN POSITION P
-                           ON E.POS_ID = P.POS_ID
-                 LEFT JOIN EMPLOYEE EM
-                           ON EM.EMP_ID = RA.EXAMINER
-                 LEFT JOIN EMPLOYEE EMP
-                           ON EMP.EMP_ID = RA.AUDITOR
-                 LEFT JOIN EMPLOYEE EMPL
-                           ON EMPL.EMP_ID = RA.APPROVER
-        WHERE 1 = 1
-    </sql>
 </mapper>

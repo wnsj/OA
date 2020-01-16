@@ -39,7 +39,6 @@ public class ReimbursementAccountAction {
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
         System.out.println(reimbursementAccountBean);
-        System.out.println("file:" + file.length);
         accountService.applyReimbursementAccount(reimbursementAccountBean, file);
         return jsonObject;
     }

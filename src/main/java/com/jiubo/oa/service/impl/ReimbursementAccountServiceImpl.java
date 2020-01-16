@@ -467,11 +467,12 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(reimbursementAccountBean.getApproverAdv())) {
                 //不同意，发消息给申请人
-                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setApproverAdv("2").setApproverRemark(reimbursementAccountBean.getApproverRemark()).setApproverDate(nowStr));
+
+                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setApproverAdv("2").setApproverRemark(reimbursementAccountBean.getApproverRemark()).setApproverDate(nowStr).setState("4"));
                 operationReimbursementEmpMsg(reimbursementAccount, list);
             } else {
                 //同意，发消息给申请人
-                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setApproverAdv("1").setApproverRemark(reimbursementAccountBean.getApproverRemark()).setApproverDate(nowStr));
+                updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setApproverAdv("1").setApproverRemark(reimbursementAccountBean.getApproverRemark()).setApproverDate(nowStr).setState("3"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(reimbursementAccount.getEmpId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
                 EmployeeBean employeeBean = employeeBeans.get(0);

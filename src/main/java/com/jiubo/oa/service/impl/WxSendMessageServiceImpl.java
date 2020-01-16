@@ -145,7 +145,6 @@ public class WxSendMessageServiceImpl implements WxSendMessageService {
 
     @Override
     public void sendMessage(JSONObject jsonObject) throws Exception {
-        System.out.println("触发");
         send(jsonObject, 0);
     }
 }
