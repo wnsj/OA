@@ -5,19 +5,22 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class InformationSheetBean {
+public class InformationSheetBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     //信息单ID
     private String infId;
 
     //信息单类型
-    private String sheefType;
+    private String sheetType;
 
     //重要性级别
-    private String degreeTYPE;
+    private String degreeType;
 
     //发起人ID
     private String senderId;
