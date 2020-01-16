@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 /* *
@@ -30,6 +31,10 @@ public class ReimbursementAccountBean implements Serializable {
   private String empName;
 
   private String createDate;
+
+  private String createBegDate;
+
+  private String createEndDate;
 
   private String raReason;
 
@@ -80,4 +85,7 @@ public class ReimbursementAccountBean implements Serializable {
   private String posName;
 
   private String advState;
+
+  //private MultipartFile[] file;
+
 }

@@ -19,9 +19,9 @@ import java.util.ArrayList;
  * @author: dx
  * @version: 1.0
  */
-@Configuration
+//@Configuration
 //开启Swagger2
-@EnableSwagger2
+//@EnableSwagger2
 public class SwaggerConfig {
 
     //配置要扫描接口的方式

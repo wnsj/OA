@@ -2,5 +2,167 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jiubo.oa.dao.ReimbursementAccountDao">
 
+    <!--    添加报销-->
+    <insert id="addReimbursementAccount" useGeneratedKeys="true" keyProperty="raId">
+        INSERT INTO REIMBURSEMENT_ACCOUNT (RA_ID, EMP_ID, CREATE_DATE, RA_REASON, MONEY,
+                                           STATE, EXAMINER, EXAMINER_ADV, EXAMINER_DATE, AUDITOR,
+                                           AUDITOR_ADV, AUDITOR_DATE, APPROVER, APPROVER_ADV, APPROVER_DATE,
+                                           EXAMINER_REMARK, AUDITOR_REMARK, APPROVER_REMARK)
+        VALUES (#{raId}, #{empId}, #{createDate}, #{raReason}, #{money},
+                #{state}, #{examiner}, #{examinerAdv}, #{examinerDate}, #{auditor},
+                #{auditorAdv}, #{auditorDate}, #{approver}, #{approverAdv}, #{approverDate},
+                #{examinerRemark}, #{auditorRemark}, #{approverRemark})
+    </insert>
 
+    <!--    查询报销-->
+    <select id="queryReimbursementAccount" resultType="com.jiubo.oa.bean.ReimbursementAccountBean">
+        SELECT RA.RA_ID,
+        RA.EMP_ID,
+        RA.CREATE_DATE,
+        RA.RA_REASON,
+        RA.MONEY,
+        RA.STATE,
+        RA.EXAMINER,
+        RA.EXAMINER_ADV,
+        RA.EXAMINER_DATE,
+        RA.AUDITOR,
+        RA.AUDITOR_ADV,
+        RA.AUDITOR_DATE,
+        RA.APPROVER,
+        RA.APPROVER_ADV,
+        RA.APPROVER_DATE,
+        RA.EXAMINER_REMARK,
+        RA.AUDITOR_REMARK,
+        RA.APPROVER_REMARK,
+        E.EMP_NAME,
+        D.DEPT_ID,
+        D.DEPT_NAME,
+        P.POS_ID,
+        P.POS_NAME,
+        EM.EMP_NAME EXAMINER_NAME,
+        EMP.EMP_NAME AUDITOR_NAME,
+        EMPL.EMP_NAME APPROVER_NAME
+        FROM REIMBURSEMENT_ACCOUNT RA
+        LEFT JOIN EMPLOYEE E
+        ON E.EMP_ID = RA.EMP_ID
+        LEFT JOIN DEPARTMENT D
+        ON D.DEPT_ID = E.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        LEFT JOIN EMPLOYEE EM
+        ON EM.EMP_ID = RA.EXAMINER
+        LEFT JOIN EMPLOYEE EMP
+        ON EMP.EMP_ID = RA.AUDITOR
+        LEFT JOIN EMPLOYEE EMPL
+        ON EMPL.EMP_ID = RA.APPROVER
+        WHERE 1 = 1
+        <if test="raId != null and raId != ''">
+            AND RA.RA_ID = #{raId}
+        </if>
+        <if test="empName != null and empName != ''">
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+        </if>
+        <if test="deptId != null and deptId != ''">
+            AND E.EMP_ID = #{deptId}
+        </if>
+        <if test="state != null and state != ''">
+            AND RA.STATE = #{state}
+        </if>
+        <if test="createBegDate != null and createBegDate != '' ">
+            AND RA.CREATE_DATE >= #{createBegDate}
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
+            AND RA.CREATE_DATE &lt; #{createEndDate}
+        </if>
+        <if test="advState != null and advState != ''">
+            <choose>
+                <when test="advState == 1">
+                    AND RA.STATE != 1
+                    AND RA.APPROVER_ADV != 1
+                    AND RA.EXAMINER_ADV != 2
+                    AND RA.AUDITOR_ADV != 2
+                    AND RA.APPROVER_ADV != 2
+                    AND (
+                    RA.EXAMINER_ADV = 0 OR RA.EXAMINER_ADV = 1
+                    OR RA.AUDITOR_ADV = 0 OR RA.AUDITOR_ADV = 1
+                    )
+                </when>
+                <when test="advState == 2">
+                    AND RA.STATE != 1
+                    AND RA.APPROVER_ADV = 1
+                </when>
+                <when test="advState == 3">
+                    AND RA.STATE != 1
+                    AND (
+                    RA.EXAMINER_ADV = 2
+                    OR RA.AUDITOR_ADV = 2
+                    OR RA.APPROVER_ADV = 2
+                    )
+                </when>
+                <when test="advState == 4">
+                    AND RA.STATE = 1
+                </when>
+            </choose>
+        </if>
+        ORDER BY RA.RA_ID
+    </select>
+
+    <update id="updateReimbursementAccount">
+        UPDATE REIMBURSEMENT_ACCOUNT
+        SET
+        <trim suffixOverrides=",">
+            <if test="empId != null and empId != ''">
+                EMP_ID = #{empId},
+            </if>
+            <if test="createDate != null and createDate != ''">
+                CREATE_DATE = #{createDate},
+            </if>
+            <if test="raReason != null and raReason != ''">
+                RA_REASON = #{raReason},
+            </if>
+            <if test="money != null and money != '' and money != 0">
+                MONEY = #{money},
+            </if>
+            <if test="state != null and state != ''">
+                STATE = #{state},
+            </if>
+            <if test="examiner != null and examiner != ''">
+                EXAMINER = #{examiner},
+            </if>
+            <if test="examinerAdv != null and examinerAdv != ''">
+                EXAMINER_ADV = #{examinerAdv},
+            </if>
+            <if test="examinerDate != null and examinerDate != ''">
+                EXAMINER_DATE = #{examinerDate},
+            </if>
+            <if test="auditor != null and auditor != ''">
+                AUDITOR = #{auditor},
+            </if>
+            <if test="auditorAdv != null and auditorAdv != ''">
+                AUDITOR_ADV = #{auditorAdv},
+            </if>
+            <if test="auditorDate != null and auditorDate != ''">
+                AUDITOR_DATE = #{auditorDate},
+            </if>
+            <if test="approver != null and approver != ''">
+                APPROVER = #{approver},
+            </if>
+            <if test="approverAdv != null and approverAdv != ''">
+                APPROVER_ADV = #{approverAdv},
+            </if>
+            <if test="approverDate != null and approverDate != ''">
+                APPROVER_DATE = #{approverDate},
+            </if>
+            <if test="examinerRemark != null and examinerRemark != ''">
+                EXAMINER_REMARK = #{examinerRemark},
+            </if>
+            <if test="auditorRemark != null and auditorRemark != ''">
+                AUDITOR_REMARK = #{auditorRemark},
+            </if>
+            <if test="approverRemark != null and approverRemark != ''">
+                APPROVER_REMARK = #{approverRemark}
+            </if>
+        </trim>
+        WHERE RA_ID = #{raId}
+    </update>
 </mapper>
