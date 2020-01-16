@@ -50,6 +50,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
         return employeeDao.queryEmployee(employeeBean);
     }
 
+
+    @Override
+    public List<EmployeeBean> queryDeptDrector(EmployeeBean employeeBean) {
+        return employeeDao.queryDeptDrector(employeeBean);
+    }
+
     @Override
     public JSONObject login(EmployeeBean employeeBean) throws Exception {
         JSONObject jsonObject = new JSONObject();

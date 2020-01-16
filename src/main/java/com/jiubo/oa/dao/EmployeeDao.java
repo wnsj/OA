@@ -28,4 +28,7 @@ public interface EmployeeDao extends BaseMapper<EmployeeBean> {
 
     //查询审核人
     List<EmployeeBean> queryExamine(EmployeeBean employeeBean);
+
+    //查询部门负责人
+    List<EmployeeBean> queryDeptDrector(EmployeeBean employeeBean);
 }

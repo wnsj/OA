@@ -92,6 +92,7 @@ public class EmployeeBean implements Serializable {
     //部门
     private String deptId;
 
+
     //部门名
     private String deptName;
 

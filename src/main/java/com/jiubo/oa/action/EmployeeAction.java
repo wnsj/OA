@@ -38,6 +38,18 @@ public class EmployeeAction {
         return jsonObject;
     }
 
+    //查询部门负责人
+    @PostMapping(value = "/queryDeptDrector")
+    public JSONObject queryDeptDrector(@RequestBody String params) throws Exception {
+        if (StringUtils.isBlank(params)) throw new MessageException("参数接收失败!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        EmployeeBean employeeBean = JSONObject.parseObject(params, EmployeeBean.class);
+        jsonObject.put(Constant.Result.RETDATA, employeeService.queryDeptDrector(employeeBean));
+        return jsonObject;
+    }
+
     //登录
     @PostMapping(value = "/login")
     public JSONObject login(@RequestBody String params) throws Exception {
