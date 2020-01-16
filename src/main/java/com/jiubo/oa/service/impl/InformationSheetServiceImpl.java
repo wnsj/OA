@@ -248,7 +248,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
                 updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setState("1"));
             } else {
                 //修改,通知申请人+审查人
-                informationSheetBean.setState("0");
+                informationSheetBean.setState("2");
                 if (StringUtils.isBlank(informationSheetBean.getInfId())) throw new MessageException("信息单ID不能为空");
                 if (StringUtils.isBlank(informationSheetBean.getSheetType())) throw new MessageException("信息单类型不能为空");
                 if (StringUtils.isBlank(informationSheetBean.getDegreeType())) throw new MessageException("信息单重要程度不能为空");
@@ -269,11 +269,11 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(informationSheetBean.getSendAgree())) {
                 //不同意，发消息给申请人
-                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("2").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr));
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("2").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr).setState("4"));
                 operationInformationSheetEmpMsg(informationSheetBean, list);
             } else {
                 //发起部门负责人同意，通知接收部门负责人
-                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("1").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr));
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("1").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr).setState("2"));
 
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
@@ -328,11 +328,11 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(informationSheetBean.getRecAgree())) {
                 //不同意，发消息给申请人
-                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("2").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr));
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("2").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr).setState("4"));
                 operationInformationSheetEmpMsg(informationSheetBean, list);
             } else {
                 //同意，通知接收部门负责人审核
-                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("1").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr));
+                updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("1").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr).setState("3"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                 EmployeeBean auditor = employeeBeans.get(0);

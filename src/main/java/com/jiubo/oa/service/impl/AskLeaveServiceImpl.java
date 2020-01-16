@@ -107,8 +107,6 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
         }
         askLeaveBean.setState("0");
         askLeaveBean.setExaminerAdv("0");
-        askLeaveBean.setExaminerAdv("0");
-        askLeaveBean.setAuditorAdv("0");
         askLeaveBean.setApproverAdv("0");
         addAskLeave(askLeaveBean);
         applyLeaveSendMsg(askLeaveBean, true, list);
@@ -264,6 +262,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 askLeaveBean.setAuditorAdv("0");
                 askLeaveBean.setApproverAdv("0");
                 askLeaveBean.setCreateDate(askLeave.getCreateDate());
+                askLeaveBean.setState("2");
                 updateAskLeave(askLeaveBean);
                 applyLeaveSendMsg(askLeaveBean, false, list);
             }
@@ -273,7 +272,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             if (!askLeave.getExaminer().equals(askLeaveBean.getExaminer())) throw new MessageException("不可代替他人审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(askLeaveBean.getExaminerAdv())) {
-                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setExaminerAdv("2").setExaminerDate(nowStr));
+                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setExaminerAdv("2").setExaminerDate(nowStr).setState("4"));
                 //通知申请人，审核未通过
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getEmpId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
@@ -319,7 +318,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                     list.add(jsonObject);
                 }
             } else {
-                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setExaminerAdv("1").setExaminerDate(nowStr));
+                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setExaminerAdv("1").setExaminerDate(nowStr).setState("2"));
                 if (StringUtils.isBlank(askLeave.getApprover())) {
                     //通知申请人审核通过
                     employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getEmpId()));
@@ -422,7 +421,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(askLeaveBean.getAuditorAdv())) {
                 //审核未通过，通知申请人
-                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("2").setAuditorDate(nowStr));
+                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("2").setAuditorDate(nowStr).setState("4"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getEmpId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
                 EmployeeBean employeeBean = employeeBeans.get(0);
@@ -468,7 +467,9 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 }
             } else {
                 //审核通过，通知批准人
-                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("1").setAuditorDate(nowStr));
+                if (StringUtils.isBlank(askLeave.getApprover())||"0".equals(askLeave.getApprover()))
+                    updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("1").setAuditorDate(nowStr).setState("3"));
+                else updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("1").setAuditorDate(nowStr).setState("2"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getApprover()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                 EmployeeBean approver = employeeBeans.get(0);
@@ -524,11 +525,11 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             String result = "未通过";
             if ("2".equals(askLeaveBean.getApproverAdv())) {
                 //未通过审核，通知申请人
-                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setApproverAdv("2").setApproverDate(nowStr));
+                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setApproverAdv("2").setApproverDate(nowStr).setState("4"));
             } else {
                 result = "已通过";
                 //通过审核,通知申请人
-                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setApproverAdv("1").setApproverDate(nowStr));
+                updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setApproverAdv("1").setApproverDate(nowStr).setState("3"));
             }
 
             employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getEmpId()));

@@ -29,6 +29,7 @@
         ,INFS.REC_AGREE
         ,INFS.REC_CONTENT
         ,INFS.REC_APP_DATE
+        ,INFS.HANDLE_STATE
         ,INFS.STATE
         FROM INFORMATION_SHEET INFS
         LEFT JOIN EMPLOYEE E1 ON E1.EMP_ID = INFS.SENDER_ID
@@ -40,6 +41,21 @@
         WHERE 1 = 1
         <if test="infId != null and infId != ''">
             AND INFS.INF_ID = #{infId}
+        </if>
+        <if test="state != null and state != 0">
+            AND INFS.STATE = #{state}
+        </if>
+        <if test="state != null and state != 0">
+            AND INFS.STATE = #{state}
+        </if>
+        <if test="senderName != null and senderName != 0">
+            AND E1.EMP_NAME = #{senderName}
+        </if>
+        <if test="deptSendId != null and deptSendId != 0">
+            AND (INFS.DEPT_SEND_ID = #{deptSendId} OR INFS.DEPT_REC_ID=#{deptSendId})
+        </if>
+        <if test="state != null and state != 0">
+            AND INFS.STATE = #{state}
         </if>
     </select>
 
