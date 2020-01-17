@@ -383,7 +383,7 @@
         ON FC.EMP_ID = E.EMP_ID
         LEFT JOIN FORGET_CARD_REASON FCR
         ON FCR.FCR_ID = FC.FCR_ID
-        WHERE FC.EXAMINER_ADV = 0  AND (FC.STATE = 0 OR FC.STATE = 2) AND FC.EXAMINER = #{empId}
+        WHERE FC.EXAMINER_ADV = 0 AND (FC.STATE = 0 OR FC.STATE = 2) AND FC.EXAMINER = #{empId}
         <if test="fcId != null and fcId != ''">
             AND FC.FC_ID != #{fcId}
         </if>
@@ -421,6 +421,19 @@
         AND (FC.STATE = 0 OR FC.STATE = 2)
         <if test="fcId != null and fcId != ''">
             AND FC.FC_ID != #{fcId}
+        </if>
+
+        UNION
+        
+        SELECT RA_ID AS AL_ID,0 AS LT_ID,'' AS LT_NAME,RA.EMP_ID,E.EMP_NAME,RA.CREATE_DATE,'4' AS BILL
+        FROM REIMBURSEMENT_ACCOUNT RA
+        LEFT JOIN EMPLOYEE E
+        ON RA.EMP_ID = E.EMP_ID
+        WHERE RA.EXAMINER_ADV = 0
+        AND (RA.STATE = 0 OR RA.STATE = 2)
+        AND RA.EXAMINER = #{empId}
+        <if test="raId != null and raId != ''">
+            AND RA.RA_ID = #{raId}
         </if>
     </select>
 </mapper>

@@ -293,7 +293,7 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
             //审核人审核
             if (!"0".equals(forgetCard.getAuditorAdv())) throw new MessageException("已完成审核,不可重复审核!");
             if (!forgetCard.getAuditor().equals(forgetCardBean.getAuditor())) throw new MessageException("不可代替他人审核!");
-            if (!"1".equals(forgetCardBean.getExaminerAdv()))throw new MessageException("审查人未同意前不可审核!");
+            if (!"1".equals(forgetCard.getExaminerAdv()))throw new MessageException("审查人未同意前不可审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(forgetCardBean.getAuditorAdv())) {
                 //不同意，发消息给申请人
@@ -403,7 +403,7 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
             if (!"0".equals(forgetCard.getApproverAdv())) throw new MessageException("已完成审核,不可重复审核!");
             if(StringUtils.isBlank(forgetCard.getApprover()))throw new MessageException("该申请只需2个审核人审核，不可审核!");
             if (!forgetCard.getApprover().equals(forgetCardBean.getApprover())) throw new MessageException("不可代替他人审核!");
-            if (!"1".equals(forgetCardBean.getAuditorAdv()))throw new MessageException("审核人未同意前不可审核!");
+            if (!"1".equals(forgetCard.getAuditorAdv()))throw new MessageException("审核人未同意前不可审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(forgetCardBean.getApproverAdv())) {
                 //不同意，发消息给申请人
