@@ -31,7 +31,9 @@
         EM.EMP_NAME EXAMINERNAME,
         EMP.EMP_NAME AUDITORNAME,
         EMPL.EMP_NAME APPROVERNAME,
-        RR.REA_NAME
+        RR.REA_NAME,
+        D.DEPT_LEVEL,
+        P.LEVAL POSLEVAL
         FROM REST_DOWN R
         LEFT JOIN EMPLOYEE E
         ON R.EMP_ID = E.EMP_ID
@@ -65,6 +67,9 @@
         <if test="deptId != null and deptId != ''">
             AND E.DEPT_ID = #{deptId}
         </if>
+        <if test="state != null and state != ''">
+            AND R.STATE = #{state}
+        </if>
         <if test="createBegDate != null and createBegDate != ''">
             AND R.CREATE_DATE >= #{createBegDate}
         </if>
@@ -82,37 +87,6 @@
         </if>
         <if test="restDateEnd != null and restDateEnd != ''">
             AND R.REST_DATE_END &lt; #{restDateEnd}
-        </if>
-        <if test="advState != null and advState != ''">
-            <choose>
-                <when test="advState == 0"></when>
-                <when test="advState == 1">
-                    AND R.STATE != 1
-                    AND R.APPROVER_ADV != 1
-                    AND R.EXAMINER_ADV != 2
-                    AND R.AUDITOR_ADV != 2
-                    AND R.APPROVER_ADV != 2
-                    AND (
-                    R.EXAMINER_ADV = 0 OR R.EXAMINER_ADV = 1
-                    OR R.AUDITOR_ADV = 0 OR R.AUDITOR_ADV = 1
-                    )
-                </when>
-                <when test="advState == 2">
-                    AND R.STATE != 1
-                    AND R.APPROVER_ADV = 1
-                </when>
-                <when test="advState == 3">
-                    AND R.STATE != 1
-                    AND (
-                    R.EXAMINER_ADV = 2
-                    OR R.AUDITOR_ADV = 2
-                    OR R.APPROVER_ADV = 2
-                    )
-                </when>
-                <when test="advState == 4">
-                    AND R.STATE = 1
-                </when>
-            </choose>
         </if>
         ORDER BY R.RD_ID
     </select>

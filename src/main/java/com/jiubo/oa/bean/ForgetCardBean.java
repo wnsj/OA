@@ -106,12 +106,14 @@ public class ForgetCardBean implements Serializable {
 
     private String deptName;
 
+    private String deptLevel;
+
     //岗位
     private String posId;
 
     private String posName;
 
-    private String advState;
+    private String posLeval;
 
     private String state;
 }

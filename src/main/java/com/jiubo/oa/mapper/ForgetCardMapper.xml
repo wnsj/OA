@@ -8,7 +8,8 @@
         FC.WITNESS_REMARK,
         FC.EXAMINER, FC.EXAMINER_ADV, FC.EXAMINER_REMARK, FC.EXAMINER_DATE, FC.AUDITOR, FC.AUDITOR_ADV,
         FC.AUDITOR_REMARK, FC.AUDITOR_DATE, FC.APPROVER, FC.APPROVER_ADV, FC.APPROVER_REMARK, FC.APPROVER_DATE,
-        E.EMP_NAME,D.DEPT_ID,D.DEPT_NAME,P.POS_ID,P.POS_NAME,EMPEE.EMP_NAME WITNESSNAME, EM.EMP_NAME EXAMINERNAME,
+        E.EMP_NAME,D.DEPT_ID,D.DEPT_NAME,D.DEPT_LEVEL,P.POS_ID,P.POS_NAME,P.LEVAL POS_LEVAL,EMPEE.EMP_NAME WITNESSNAME,
+        EM.EMP_NAME EXAMINERNAME,
         EMP.EMP_NAME AUDITORNAME,EMPL.EMP_NAME APPROVERNAME,FCR.FCR_NAME
         FROM FORGET_CARD FC
         LEFT JOIN EMPLOYEE E
@@ -48,37 +49,6 @@
         </if>
         <if test="forgetDateEnd != null and forgetDateEnd != ''">
             AND FC.FORGET_DATE &lt; #{forgetDateEnd}
-        </if>
-        <if test="advState != null and advState != ''">
-            <choose>
-                <when test="advState == 0"></when>
-                <when test="advState == 1">
-                    AND FC.STATE != 1
-                    AND FC.APPROVER_ADV != 1
-                    AND FC.EXAMINER_ADV != 2
-                    AND FC.AUDITOR_ADV != 2
-                    AND FC.APPROVER_ADV != 2
-                    AND (
-                    FC.EXAMINER_ADV = 0 OR FC.EXAMINER_ADV = 1
-                    OR FC.AUDITOR_ADV = 0 OR FC.AUDITOR_ADV = 1
-                    )
-                </when>
-                <when test="advState == 2">
-                    AND FC.STATE != 1
-                    AND FC.APPROVER_ADV = 1
-                </when>
-                <when test="advState == 3">
-                    AND FC.STATE != 1
-                    AND (
-                    FC.EXAMINER_ADV = 2
-                    OR FC.AUDITOR_ADV = 2
-                    OR FC.APPROVER_ADV = 2
-                    )
-                </when>
-                <when test="advState == 4">
-                    AND FC.STATE = 1
-                </when>
-            </choose>
         </if>
         ORDER BY FC.FC_ID
     </select>

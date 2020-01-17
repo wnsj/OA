@@ -108,5 +108,7 @@ public class RestDownBean implements Serializable {
     //岗位名
     private String posName;
 
-    private String advState;
+    private String deptLevel;
+
+    private String posLeval;
 }
