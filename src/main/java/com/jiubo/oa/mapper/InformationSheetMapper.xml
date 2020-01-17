@@ -51,6 +51,12 @@
         <if test="senderName != null and senderName != 0">
             AND E1.EMP_NAME = #{senderName}
         </if>
+        <if test="sendDateBeg != null and sendDateBeg != ''">
+            AND INFS.SEND_DATE >= #{sendDateBeg}
+        </if>
+        <if test="sendDateEnd != null and sendDateEnd != ''">
+            AND INFS.SEND_DATE &lt; #{sendDateEnd}
+        </if>
         <if test="deptSendId != null and deptSendId != 0">
             AND (INFS.DEPT_SEND_ID = #{deptSendId} OR INFS.DEPT_REC_ID=#{deptSendId})
         </if>

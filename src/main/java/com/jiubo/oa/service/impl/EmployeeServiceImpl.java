@@ -57,6 +57,11 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, EmployeeBean> 
     }
 
     @Override
+    public List<EmployeeBean> queryEmployeeDept(EmployeeBean employeeBean) {
+        return employeeDao.queryEmployeeDept(employeeBean);
+    }
+
+    @Override
     public JSONObject login(EmployeeBean employeeBean) throws Exception {
         JSONObject jsonObject = new JSONObject();
         if (StringUtils.isBlank(employeeBean.getAccName())) throw new MessageException("账号不能为空!");

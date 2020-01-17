@@ -31,4 +31,7 @@ public interface EmployeeDao extends BaseMapper<EmployeeBean> {
 
     //查询部门负责人
     List<EmployeeBean> queryDeptDrector(EmployeeBean employeeBean);
+
+    //查询有部门负责人的部门
+    List<EmployeeBean> queryEmployeeDept(EmployeeBean employeeBean);
 }

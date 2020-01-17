@@ -43,6 +43,10 @@ public class InformationSheetBean implements Serializable {
     //发起时间
     private String sendDate;
 
+    private String sendDateBeg;
+
+    private String sendDateEnd;
+
     //接收部门ID
     private String deptRecId;
 

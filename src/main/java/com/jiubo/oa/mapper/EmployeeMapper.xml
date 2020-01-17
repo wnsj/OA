@@ -70,6 +70,17 @@
         </if>
     </select>
 
+    <!--    查询有負責人的部门  -->
+    <select id="queryEmployeeDept" resultType="com.jiubo.oa.bean.EmployeeBean">
+        SELECT E.DEPT_ID,D.DEPT_NAME,D.DEPT_LEVEL
+        FROM EMPLOYEE E
+        LEFT JOIN DEPARTMENT D
+        ON E.DEPT_ID = D.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
+        WHERE 1 = 1 AND P.LEVAL='2'
+    </select>
+
     <!--    修改员工-->
     <update id="updateEmployee">
         UPDATE EMPLOYEE
