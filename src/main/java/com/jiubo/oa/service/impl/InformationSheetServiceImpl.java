@@ -50,6 +50,8 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
     @Transactional(rollbackFor = Exception.class)
     public void addInformationSheet(InformationSheetBean informationSheetBean) throws Exception {
         informationSheetBean.setState("0");
+        informationSheetBean.setRecAgree("0");
+        informationSheetBean.setSendAgree("0");
         informationSheetBean.setSendDate(TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime()));
         if (informationSheetDao.addInformationSheet(informationSheetBean) <= 0) throw new MessageException("操作失败!");
     }
@@ -257,13 +259,15 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
                 if (StringUtils.isBlank(informationSheetBean.getTheme())) throw new MessageException("信息单主题不能为空");
                 if (StringUtils.isBlank(informationSheetBean.getContent())) throw new MessageException("信息单内容不能为空");
                 informationSheetBean.setSendDate(informationSheetBean1.getSendDate());
+                informationSheetBean.setRecAgree("0");
+                informationSheetBean.setSendAgree("0");
                 System.out.println("informationSheetBean:"+informationSheetBean.toString());
                 updateInformationSheet(informationSheetBean);
                 applyInformationSheet(informationSheetBean, list, false);
             }
         }else if (StringUtils.isNotBlank(informationSheetBean.getSendAgree())) {
             //发起部门负责人审核
-            if (!"0".equals(informationSheetBean1.getSendAgree())) throw new MessageException("已完成审核,不可重复审核!");
+            if (!"0".equals(informationSheetBean1.getRecAgree())) throw new MessageException("已完成审核,不可重复审核!");
             if (!informationSheetBean.getEmpSendId().equals(informationSheetBean1.getEmpSendId()))
                 throw new MessageException("不可代替他人审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
@@ -323,6 +327,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
         } else if (StringUtils.isNotBlank(informationSheetBean.getRecAgree())) {
             //信息单接收部门审核
             if (!"0".equals(informationSheetBean1.getRecAgree())) throw new MessageException("已完成审核,不可重复审核!");
+            if (!"1".equals(informationSheetBean1.getSendAgree())) throw new MessageException("未经发起负责人审核通过,接受部门不能审核!");
             if (!informationSheetBean.getEmpRecId().equals(informationSheetBean1.getEmpRecId()))
                 throw new MessageException("不可代替他人审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());

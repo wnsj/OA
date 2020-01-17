@@ -63,7 +63,7 @@
     <insert id="addInformationSheet" useGeneratedKeys="true" keyProperty="infId">
         INSERT INTO INFORMATION_SHEET (SHEET_TYPE,DEGREE_TYPE,SENDER_ID,EMP_SEND_ID,DEPT_SEND_ID,SEND_DATE,DEPT_REC_ID,EMP_REC_ID,EMP_ID
                       ,THEME,CONTENT,REQUIRE_CONTENT,STATE)
-        VALUES (#{sheefType}, #{degreeType}, #{senderId}, #{empSendId},#{deptSendId},#{sendDate}, #{deptRecId}, #{empRecId}, #{empId},
+        VALUES (#{sheetType}, #{degreeType}, #{senderId}, #{empSendId},#{deptSendId},#{sendDate}, #{deptRecId}, #{empRecId}, #{empId},
                 #{theme}, #{content}, #{requireContent}, #{state})
     </insert>
 
@@ -72,8 +72,8 @@
         UPDATE INFORMATION_SHEET
         SET
         <trim suffixOverrides=",">
-            <if test="sheefType != null and sheefType != ''">
-                SHEET_TYPE = #{sheefType},
+            <if test="sheetType != null and sheetType != ''">
+                SHEET_TYPE = #{sheetType},
             </if>
             <if test="degreeType != null and degreeType != ''">
                 DEGREE_TYPE = #{degreeType},
