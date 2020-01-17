@@ -424,7 +424,7 @@
         </if>
 
         UNION
-        
+
         SELECT RA_ID AS AL_ID,0 AS LT_ID,'' AS LT_NAME,RA.EMP_ID,E.EMP_NAME,RA.CREATE_DATE,'4' AS BILL
         FROM REIMBURSEMENT_ACCOUNT RA
         LEFT JOIN EMPLOYEE E
@@ -434,6 +434,61 @@
         AND RA.EXAMINER = #{empId}
         <if test="raId != null and raId != ''">
             AND RA.RA_ID = #{raId}
+        </if>
+
+        UNION
+
+        SELECT RA_ID AS AL_ID,0 AS LT_ID,'' AS LT_NAME,RA.EMP_ID,E.EMP_NAME,RA.CREATE_DATE,'4' AS BILL
+        FROM REIMBURSEMENT_ACCOUNT RA
+        LEFT JOIN EMPLOYEE E
+        ON RA.EMP_ID = E.EMP_ID
+        WHERE RA.EXAMINER_ADV = 1
+        AND RA.AUDITOR = #{empId}
+        AND RA.AUDITOR_ADV = 0
+        AND (RA.STATE = 0 OR RA.STATE = 2)
+        <if test="raId != null and raId != ''">
+            AND RA.RA_ID = #{raId}
+        </if>
+
+        UNION
+
+        SELECT RA_ID AS AL_ID,0 AS LT_ID,'' AS LT_NAME,RA.EMP_ID,E.EMP_NAME,RA.CREATE_DATE,'4' AS BILL
+        FROM REIMBURSEMENT_ACCOUNT RA
+        LEFT JOIN EMPLOYEE E
+        ON RA.EMP_ID = E.EMP_ID
+        WHERE RA.EXAMINER_ADV = 1
+        AND RA.AUDITOR_ADV = 1
+        AND RA.APPROVER = #{empId}
+        AND RA.APPROVER_ADV = 0
+        AND (RA.STATE = 0 OR RA.STATE = 2)
+        <if test="raId != null and raId != ''">
+            AND RA.RA_ID = #{raId}
+        </if>
+
+        UNION
+
+        SELECT INFS.INF_ID,0 AS LT_ID,'' AS LT_NAME,INFS.SENDER_ID EMP_ID,E.EMP_NAME,INFS.SEND_DATE CREATE_DATE,'5' AS
+        BILL
+        FROM INFORMATION_SHEET INFS
+        LEFT JOIN EMPLOYEE E
+        ON INFS.SENDER_ID = E.EMP_ID
+        WHERE INFS.SEND_AGREE = 0 AND (INFS.STATE = 0 OR INFS.STATE = 2)
+        AND INFS.EMP_SEND_ID = #{empId}
+        <if test="infId != null and infId != ''">
+            AND INFS.INF_ID = #{infId}
+        </if>
+
+        UNION
+
+        SELECT INFS.INF_ID,0 AS LT_ID,'' AS LT_NAME,INFS.SENDER_ID EMP_ID,E.EMP_NAME,INFS.SEND_DATE CREATE_DATE,'5' AS
+        BILL
+        FROM INFORMATION_SHEET INFS
+        LEFT JOIN EMPLOYEE E
+        ON INFS.SENDER_ID = E.EMP_ID
+        WHERE INFS.SEND_AGREE = 1 AND (INFS.STATE = 0 OR INFS.STATE = 2)
+        AND INFS.EMP_REC_ID = #{empId}
+        <if test="infId != null and infId != ''">
+            AND INFS.INF_ID = #{infId}
         </if>
     </select>
 </mapper>
