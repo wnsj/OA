@@ -435,11 +435,11 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(restDownBean.getApproverAdv())) {
                 //未通过审核，通知申请人
-                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setApproverAdv("2").setApproverDate(nowStr));
+                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setApproverAdv("2").setApproverDate(nowStr).setState("4"));
                 operationRestEmpMsg(restDown, list);
             } else {
                 //通过审核,通知申请人
-                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setApproverAdv("1").setApproverDate(nowStr));
+                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setApproverAdv("1").setApproverDate(nowStr).setState("3"));
 
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDown.getEmpId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
