@@ -37,8 +37,10 @@
         E.EMP_NAME,
         D.DEPT_ID,
         D.DEPT_NAME,
+        D.DEPT_LEVEL,
         P.POS_ID,
         P.POS_NAME,
+        P.LEVAL POS_LEVAL,
         EM.EMP_NAME EXAMINER_NAME,
         EMP.EMP_NAME AUDITOR_NAME,
         EMPL.EMP_NAME APPROVER_NAME

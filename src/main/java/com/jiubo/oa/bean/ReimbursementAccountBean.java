@@ -80,11 +80,15 @@ public class ReimbursementAccountBean implements Serializable {
   //部门名
   private String deptName;
 
+  private String deptLevel;
+
   //岗位id
   private String posId;
 
   //岗位名
   private String posName;
+
+  private String posLeval;
 
   private String advState;
 

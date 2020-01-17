@@ -7,12 +7,14 @@
         SELECT A.AL_ID, A.LT_ID, A.EMP_ID, A.CREATE_DATE, A.BEG_DATE, A.END_DATE, A.REMARK, A.BILL, A.STATE,
         A.EXAMINER, A.EXAMINER_ADV, A.EXAMINER_DATE, A.AUDITOR, A.AUDITOR_ADV, A.AUDITOR_DATE, A.APPROVER,
         A.APPROVER_ADV, A.APPROVER_DATE,E.EMP_NAME,EM.EMP_NAME EXAMINER_NAME,EMP.EMP_NAME AUDITOR_NAME,EMPL.EMP_NAME
-        APPROVER_NAME,LT.LT_NAME,D.DEPT_ID,D.DEPT_NAME
+        APPROVER_NAME,LT.LT_NAME,D.DEPT_ID,D.DEPT_NAME,D.DEPT_LEVEL,E.POS_ID,P.POS_NAME,P.LEVAL POS_LEVAL
         FROM ASK_LEAVE A
         LEFT JOIN EMPLOYEE E
         ON A.EMP_ID = E.EMP_ID
         LEFT JOIN DEPARTMENT D
         ON D.DEPT_ID = E.DEPT_ID
+        LEFT JOIN POSITION P
+        ON E.POS_ID = P.POS_ID
         LEFT JOIN EMPLOYEE EM
         ON EM.EMP_ID = A.EXAMINER
         LEFT JOIN EMPLOYEE EMP
@@ -53,37 +55,6 @@
         </if>
         <if test="qEndDate != null and qEndDate != ''">
             AND A.END_DATE &lt; #{qEndDate}
-        </if>
-
-        <if test="advState != null and advState != ''">
-            <choose>
-                <when test="advState == 1">
-                    AND A.STATE != 1
-                    AND A.APPROVER_ADV != 1
-                    AND A.EXAMINER_ADV != 2
-                    AND A.AUDITOR_ADV != 2
-                    AND A.APPROVER_ADV != 2
-                    AND (
-                    A.EXAMINER_ADV = 0 OR A.EXAMINER_ADV = 1
-                    OR A.AUDITOR_ADV = 0 OR A.AUDITOR_ADV = 1
-                    )
-                </when>
-                <when test="advState == 2">
-                    AND A.STATE != 1
-                    AND A.APPROVER_ADV = 1
-                </when>
-                <when test="advState == 3">
-                    AND A.STATE != 1
-                    AND (
-                    A.EXAMINER_ADV = 2
-                    OR A.AUDITOR_ADV = 2
-                    OR A.APPROVER_ADV = 2
-                    )
-                </when>
-                <when test="advState == 4">
-                    AND A.STATE = 1
-                </when>
-            </choose>
         </if>
         ORDER BY A.AL_ID
     </select>
@@ -313,7 +284,7 @@
         LEFT JOIN LEAVE_TYPE LT
         ON A.LT_ID = LT.LT_ID
         WHERE A.EXAMINER_ADV = 0
-        AND A.STATE = 0
+        AND (A.STATE = 0 OR A.STATE = 2)
         AND A.EXAMINER = #{empId}
         <if test="alId != null and alId != ''">
             AND A.AL_ID != #{alId}
@@ -330,7 +301,7 @@
         WHERE A.EXAMINER_ADV = 1
         AND A.AUDITOR = #{empId}
         AND A.AUDITOR_ADV = 0
-        AND A.STATE = 0
+        AND (A.STATE = 0 OR A.STATE = 2)
         <if test="alId != null and alId != ''">
             AND A.AL_ID != #{alId}
         </if>
@@ -347,7 +318,7 @@
         AND A.AUDITOR_ADV = 1
         AND A.APPROVER = #{empId}
         AND A.APPROVER_ADV = 0
-        AND A.STATE = 0
+        AND (A.STATE = 0 OR A.STATE = 2)
         <if test="alId != null and alId != ''">
             AND A.AL_ID != #{alId}
         </if>
@@ -362,7 +333,7 @@
         LEFT JOIN REST_REASON RR
         ON RR.REA_ID = RD.REA_ID
         WHERE RD.EXAMINER_ADV = 0
-        AND RD.STATE = 0
+        AND (RD.STATE = 0 OR RD.STATE = 2)
         AND RD.EXAMINER = #{empId}
         <if test="rdId != null and rdId != ''">
             AND RD.RD_ID != #{rdId}
@@ -380,7 +351,7 @@
         WHERE RD.EXAMINER_ADV = 1
         AND RD.AUDITOR = #{empId}
         AND RD.AUDITOR_ADV = 0
-        AND RD.STATE = 0
+        AND (RD.STATE = 0 OR RD.STATE = 2)
         <if test="rdId != null and rdId != ''">
             AND RD.RD_ID != #{rdId}
         </if>
@@ -398,7 +369,7 @@
         AND RD.AUDITOR_ADV = 1
         AND RD.APPROVER = #{empId}
         AND RD.APPROVER_ADV = 0
-        AND RD.STATE = 0
+        AND (RD.STATE = 0 OR RD.STATE = 2)
         <if test="rdId != null and rdId != ''">
             AND RD.RD_ID != #{rdId}
         </if>
@@ -412,7 +383,7 @@
         ON FC.EMP_ID = E.EMP_ID
         LEFT JOIN FORGET_CARD_REASON FCR
         ON FCR.FCR_ID = FC.FCR_ID
-        WHERE FC.EXAMINER_ADV = 0 AND FC.STATE = 0 AND FC.EXAMINER = #{empId}
+        WHERE FC.EXAMINER_ADV = 0  AND (FC.STATE = 0 OR FC.STATE = 2) AND FC.EXAMINER = #{empId}
         <if test="fcId != null and fcId != ''">
             AND FC.FC_ID != #{fcId}
         </if>
@@ -429,7 +400,7 @@
         WHERE FC.EXAMINER_ADV = 1
         AND FC.AUDITOR = #{empId}
         AND FC.AUDITOR_ADV = 0
-        AND FC.STATE = 0
+        AND (FC.STATE = 0 OR FC.STATE = 2)
         <if test="fcId != null and fcId != ''">
             AND FC.FC_ID != #{fcId}
         </if>
@@ -447,7 +418,7 @@
         AND FC.AUDITOR_ADV = 1
         AND FC.APPROVER = #{empId}
         AND FC.APPROVER_ADV = 0
-        AND FC.STATE = 0
+        AND (FC.STATE = 0 OR FC.STATE = 2)
         <if test="fcId != null and fcId != ''">
             AND FC.FC_ID != #{fcId}
         </if>

@@ -332,7 +332,7 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
                 //同意，通知批准人
                 RestDownBean bean = new RestDownBean().setRdId(restDown.getRdId()).setAuditorAdv("1").setAuditorDate(nowStr);
                 bean.setState("2");
-                if (StringUtils.isBlank(restDownBean.getApprover())) {
+                if (StringUtils.isBlank(restDown.getApprover())) {
                     bean.setState("3");
                     updateRestDown(bean);
                     employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDown.getEmpId()));
