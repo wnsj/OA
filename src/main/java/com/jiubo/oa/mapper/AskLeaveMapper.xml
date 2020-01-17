@@ -432,6 +432,8 @@
         WHERE RA.EXAMINER_ADV = 0
         AND (RA.STATE = 0 OR RA.STATE = 2)
         AND RA.EXAMINER = #{empId}
-        <if test=""></if>
+        <if test="raId != null and raId != ''">
+            AND RA.RA_ID = #{raId}
+        </if>
     </select>
 </mapper>

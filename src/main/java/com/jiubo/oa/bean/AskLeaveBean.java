@@ -117,4 +117,10 @@ public class AskLeaveBean implements Serializable {
     private String posName;
 
     private String posLeval;
+
+    //报销单id
+    private String raId;
+
+    //信息传递单id
+    private String infId;
 }
