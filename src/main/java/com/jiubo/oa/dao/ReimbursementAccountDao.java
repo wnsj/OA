@@ -21,4 +21,7 @@ public interface ReimbursementAccountDao extends BaseMapper<ReimbursementAccount
 
     //修改报销
     public int updateReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean);
+
+    //根据状态查询报销
+    //public List<ReimbursementAccountBean> queryReimbursementAccountByState(ReimbursementAccountBean reimbursementAccountBean);
 }

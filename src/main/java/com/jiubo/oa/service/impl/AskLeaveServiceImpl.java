@@ -105,8 +105,10 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
         if (employeeBeans.isEmpty()) throw new MessageException("申请人工号错误!");
         EmployeeBean employeeBean = employeeBeans.get(0);
 
-        if (TimeUtil.differentDays(TimeUtil.parseAnyDate(askLeaveBean.getBegDate()), TimeUtil.parseAnyDate(askLeaveBean.getEndDate())) > differDay
-                && "3".equals(employeeBean.getPosLeval())) {
+        String posLeval = employeeBean.getPosLeval();
+        int level = 0;
+        if (StringUtils.isNotBlank(posLeval)) level = Integer.parseInt(posLeval);
+        if (TimeUtil.differentDays(TimeUtil.parseAnyDate(askLeaveBean.getBegDate()), TimeUtil.parseAnyDate(askLeaveBean.getEndDate())) > differDay && level >= 3) {
             //超过3天
             if (StringUtils.isBlank(askLeaveBean.getApprover())) throw new MessageException("批准人不能为空！");
         }
@@ -253,8 +255,14 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 //取消申请
                 updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setState("1"));
             } else {
+                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getEmpId()));
+                if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
+                EmployeeBean employeeBean = employeeBeans.get(0);
+                String posLeval = employeeBean.getPosLeval();
+                int level = 0;
+                if (StringUtils.isNotBlank(posLeval)) level = Integer.parseInt(posLeval);
                 //修改申请，则申请需重新审核
-                if (TimeUtil.differentDays(TimeUtil.parseAnyDate(askLeaveBean.getBegDate()), TimeUtil.parseAnyDate(askLeaveBean.getEndDate())) > differDay) {
+                if (TimeUtil.differentDays(TimeUtil.parseAnyDate(askLeaveBean.getBegDate()), TimeUtil.parseAnyDate(askLeaveBean.getEndDate())) > differDay && level >= 3) {
                     //超过3天
                     if (StringUtils.isBlank(askLeaveBean.getApprover())) throw new MessageException("批准人不能为空！");
                 } else {
@@ -472,9 +480,10 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
                 }
             } else {
                 //审核通过，通知批准人
-                if (StringUtils.isBlank(askLeave.getApprover())||"0".equals(askLeave.getApprover()))
+                if (StringUtils.isBlank(askLeave.getApprover()) || "0".equals(askLeave.getApprover()))
                     updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("1").setAuditorDate(nowStr).setState("3"));
-                else updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("1").setAuditorDate(nowStr).setState("2"));
+                else
+                    updateAskLeave(new AskLeaveBean().setAlId(askLeave.getAlId()).setAuditorAdv("1").setAuditorDate(nowStr).setState("2"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(askLeave.getApprover()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                 EmployeeBean approver = employeeBeans.get(0);
@@ -524,7 +533,7 @@ public class AskLeaveServiceImpl extends ServiceImpl<AskLeaveDao, AskLeaveBean> 
             //批准人审核
             if (!"0".equals(askLeave.getApproverAdv())) throw new MessageException("该申请已完成审核,不可重复审核!");
             if (!"1".equals(askLeave.getAuditorAdv())) throw new MessageException("审核人未同意前不可审核!");
-            if (StringUtils.isBlank(askLeave.getApprover()))throw new MessageException("该申请只有2个审核人不可审核!");
+            if (StringUtils.isBlank(askLeave.getApprover())) throw new MessageException("该申请只有2个审核人不可审核!");
             if (!askLeave.getApprover().equals(askLeaveBean.getApprover())) throw new MessageException("不可代替他人审核!");
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             String result = "未通过";

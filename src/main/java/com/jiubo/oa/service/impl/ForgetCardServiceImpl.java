@@ -237,11 +237,11 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(forgetCardBean.getExaminerAdv())) {
                 //不同意，发消息给申请人
-                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setExaminerAdv("2").setExaminerRemark(forgetCardBean.getExaminerRemark()).setExaminerDate(nowStr));
+                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setExaminerAdv("2").setExaminerRemark(forgetCardBean.getExaminerRemark()).setExaminerDate(nowStr).setState("4"));
                 operationForgetEmpMsg(forgetCard, list);
             } else {
                 //同意，通知审核人审核
-                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setExaminerAdv("1").setExaminerRemark(forgetCardBean.getExaminerRemark()).setExaminerDate(nowStr));
+                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setExaminerAdv("1").setExaminerRemark(forgetCardBean.getExaminerRemark()).setExaminerDate(nowStr).setState("2"));
 
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getAuditor()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
@@ -297,12 +297,15 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(forgetCardBean.getAuditorAdv())) {
                 //不同意，发消息给申请人
-                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setAuditorAdv("2").setAuditorRemark(forgetCardBean.getAuditorRemark()).setAuditorDate(nowStr));
+                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setAuditorAdv("2").setAuditorRemark(forgetCardBean.getAuditorRemark()).setAuditorDate(nowStr).setState("4"));
                 operationForgetEmpMsg(forgetCard, list);
             } else {
                 //同意，通知批准人审核
-                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setAuditorAdv("1").setAuditorRemark(forgetCardBean.getAuditorRemark()).setAuditorDate(nowStr));
+                ForgetCardBean bean = new ForgetCardBean().setFcId(forgetCard.getFcId()).setAuditorAdv("1").setAuditorRemark(forgetCardBean.getAuditorRemark()).setAuditorDate(nowStr);
+                bean.setState("2");
                 if (StringUtils.isBlank(forgetCard.getApprover())){
+                    bean.setState("4");
+                    updateForgetCard(bean);
                     employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getEmpId()));
                     if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
                     EmployeeBean employeeBean = employeeBeans.get(0);
@@ -347,6 +350,7 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
                         list.add(jsonObject);
                     }
                 }else{
+                    updateForgetCard(bean);
                     employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getApprover()));
                     if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                     EmployeeBean auditor = employeeBeans.get(0);
@@ -403,11 +407,11 @@ public class ForgetCardServiceImpl extends ServiceImpl<ForgetCardDao, ForgetCard
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(forgetCardBean.getApproverAdv())) {
                 //不同意，发消息给申请人
-                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setApproverAdv("2").setApproverRemark(forgetCardBean.getApproverRemark()).setApproverDate(nowStr));
+                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setApproverAdv("2").setApproverRemark(forgetCardBean.getApproverRemark()).setApproverDate(nowStr).setState("4"));
                 operationForgetEmpMsg(forgetCard, list);
             } else {
                 //同意，发消息给申请人
-                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setApproverAdv("1").setApproverRemark(forgetCardBean.getApproverRemark()).setApproverDate(nowStr));
+                updateForgetCard(new ForgetCardBean().setFcId(forgetCard.getFcId()).setApproverAdv("1").setApproverRemark(forgetCardBean.getApproverRemark()).setApproverDate(nowStr).setState("3"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(forgetCard.getEmpId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
                 EmployeeBean employeeBean = employeeBeans.get(0);

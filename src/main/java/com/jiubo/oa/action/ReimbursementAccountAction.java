@@ -22,6 +22,16 @@ public class ReimbursementAccountAction {
     @Autowired
     private ReimbursementAccountService accountService;
 
+    //查询报销单
+    @PostMapping(value = "/queryReimbursementAccount")
+    public JSONObject queryReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
+        jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
+        jsonObject.put(Constant.Result.RETDATA, accountService.queryReimbursementAccount(reimbursementAccountBean));
+        return jsonObject;
+    }
+
     //添加报销单
     @PostMapping(value = "/addReimbursementAccount")
     public JSONObject addReimbursementAccount(ReimbursementAccountBean reimbursementAccountBean, MultipartFile[] file) throws Exception {
@@ -29,25 +39,7 @@ public class ReimbursementAccountAction {
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
         System.out.println(reimbursementAccountBean);
-        System.out.println("file:" + file.length);
-        //System.out.println(reimbursementAccountBean.getFile()[0].getOriginalFilename());
-//        for (MultipartFile mf : files) {
-//            if (!mf.isEmpty()) {
-//                System.out.println(mf.getOriginalFilename());
-//                InputStream is = mf.getInputStream();
-//                int len = 0;
-//                byte[] by = new byte[1024];
-//                OutputStream os = new FileOutputStream("c:/" + mf.getOriginalFilename());
-//                BufferedInputStream bis = new BufferedInputStream(is);
-//                BufferedOutputStream bos = new BufferedOutputStream(os);
-//                while ((len = bis.read(by)) != -1) {
-//                    bos.write(by, 0, len);
-//                    bos.flush();
-//                }
-//            }
-//        }
-
-        accountService.applyReimbursementAccount(reimbursementAccountBean,file);
+        accountService.applyReimbursementAccount(reimbursementAccountBean, file);
         return jsonObject;
     }
 
@@ -57,7 +49,7 @@ public class ReimbursementAccountAction {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(Constant.Result.RETCODE, Constant.Result.SUCCESS);
         jsonObject.put(Constant.Result.RETMSG, Constant.Result.SUCCESS_MSG);
-        accountService.operationReimbursementAccount(reimbursementAccountBean,file);
+        accountService.operationReimbursementAccount(reimbursementAccountBean, file);
         return jsonObject;
     }
 }

@@ -93,7 +93,13 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
 
         if (StringUtils.isBlank(restDownBean.getReaId())) throw new MessageException("倒休原因不能为空!");
         List<JSONObject> list = new ArrayList<JSONObject>();
-        if (TimeUtil.differentDays(TimeUtil.parseAnyDate(restDownBean.getRestDateBeg()), TimeUtil.parseAnyDate(restDownBean.getRestDateEnd())) > differDay) {
+        List<EmployeeBean> employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDownBean.getEmpId()));
+        if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
+        EmployeeBean employeeBean = employeeBeans.get(0);
+        int level = 0;
+        String posLeval = employeeBean.getPosLeval();
+        if (StringUtils.isNotBlank(posLeval)) level = Integer.parseInt(posLeval);
+        if (TimeUtil.differentDays(TimeUtil.parseAnyDate(restDownBean.getRestDateBeg()), TimeUtil.parseAnyDate(restDownBean.getRestDateEnd())) > differDay && level >= 3) {
             //超过3天
             if (StringUtils.isBlank(restDownBean.getApprover())) throw new MessageException("批准人不能为空！");
         }
@@ -235,10 +241,16 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
                 updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setState("1"));
             } else {
                 //修改倒休，推送送消息
-                if (TimeUtil.differentDays(TimeUtil.parseAnyDate(restDownBean.getRestDateBeg()), TimeUtil.parseAnyDate(restDownBean.getRestDateEnd())) > differDay) {
+                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDownBean.getEmpId()));
+                if (employeeBeans.isEmpty()) throw new MessageException("未查询到该员工!");
+                EmployeeBean employeeBean = employeeBeans.get(0);
+                int level = 0;
+                String posLeval = employeeBean.getPosLeval();
+                if (StringUtils.isNotBlank(posLeval)) level = Integer.parseInt(posLeval);
+                if (TimeUtil.differentDays(TimeUtil.parseAnyDate(restDownBean.getRestDateBeg()), TimeUtil.parseAnyDate(restDownBean.getRestDateEnd())) > differDay && level >= 3) {
                     //超过3天
                     if (StringUtils.isBlank(restDownBean.getApprover())) throw new MessageException("批准人不能为空！");
-                }else{
+                } else {
                     restDownDao.updateById(new RestDownBean().setApprover(null));
                 }
                 restDownBean.setState("0");
@@ -256,11 +268,11 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(restDownBean.getExaminerAdv())) {
                 //不同意，通知申请人
-                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setExaminerAdv("2").setExaminerDate(nowStr));
+                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setExaminerAdv("2").setExaminerDate(nowStr).setState("4"));
                 operationRestEmpMsg(restDown, list);
             } else {
                 //同意，通知审核人
-                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setExaminerAdv("1").setExaminerDate(nowStr));
+                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setExaminerAdv("1").setExaminerDate(nowStr).setState("2"));
                 employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDown.getAuditor()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                 EmployeeBean auditor = employeeBeans.get(0);
@@ -314,61 +326,110 @@ public class RestDownServiceImpl extends ServiceImpl<RestDownDao, RestDownBean> 
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(restDownBean.getAuditorAdv())) {
                 //不同意，通知申请人
-                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setAuditorAdv("2").setAuditorDate(nowStr));
+                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setAuditorAdv("2").setAuditorDate(nowStr).setState("4"));
                 operationRestEmpMsg(restDown, list);
             } else {
                 //同意，通知批准人
-                updateRestDown(new RestDownBean().setRdId(restDown.getRdId()).setAuditorAdv("1").setAuditorDate(nowStr));
-                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDown.getApprover()));
-                if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
-                EmployeeBean auditor = employeeBeans.get(0);
-                if (StringUtils.isNotBlank(auditor.getOpenId())) {
-                    //审查人消息
-                    jsonObject = new JSONObject();
-                    jsonObject.put("touser", auditor.getOpenId());
-                    jsonObject.put("url", examineRestDownUrl.concat("?rdId=").concat(restDown.getRdId()));
-                    jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
-                    data = new JSONObject();
+                RestDownBean bean = new RestDownBean().setRdId(restDown.getRdId()).setAuditorAdv("1").setAuditorDate(nowStr);
+                bean.setState("2");
+                if (StringUtils.isBlank(restDownBean.getApprover())) {
+                    bean.setState("3");
+                    updateRestDown(bean);
+                    employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDown.getEmpId()));
+                    if (employeeBeans.isEmpty()) throw new MessageException("员工工号错误!");
+                    EmployeeBean employeeBean = employeeBeans.get(0);
+                    if (StringUtils.isNotBlank(employeeBean.getOpenId())) {
+                        jsonObject = new JSONObject();
+                        jsonObject.put("touser", employeeBean.getOpenId());
+                        jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                        data = new JSONObject();
 
-                    JSONObject content = new JSONObject();
-                    content.put("value", "有新的倒休申请需要审核!");
-                    content.put("color", "#173177");
-                    data.put("first", content);
+                        JSONObject content = new JSONObject();
+                        content.put("value", "您申请的倒休已通过审核!");
+                        content.put("color", "#173177");
+                        data.put("first", content);
 
-                    //申请人
-                    content = new JSONObject();
-                    content.put("value", restDown.getEmpName());
-                    content.put("color", "#173177");
-                    data.put("keyword1", content);
+                        //申请人
+                        content = new JSONObject();
+                        content.put("value", employeeBean.getEmpName());
+                        content.put("color", "#173177");
+                        data.put("keyword1", content);
 
-                    //请假类型
-                    content = new JSONObject();
-                    content.put("value", restDown.getReaName());
-                    content.put("color", "#173177");
-                    data.put("keyword2", content);
+                        //请假类型
+                        content = new JSONObject();
+                        content.put("value", restDown.getReaName());
+                        content.put("color", "#173177");
+                        data.put("keyword2", content);
 
-                    //请假时间
-                    content = new JSONObject();
-                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(restDown.getCreateDate())));
-                    content.put("color", "#173177");
-                    data.put("keyword3", content);
+                        //请假时间
+                        content = new JSONObject();
+                        content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(restDown.getCreateDate())));
+                        content.put("color", "#173177");
+                        data.put("keyword3", content);
 
-                    //备注
-                    content = new JSONObject();
-                    content.put("value", "有新的倒休申请需要审核,点击查看详情!");
-                    content.put("color", "#173177");
-                    data.put("remark", content);
+                        //备注
+                        content = new JSONObject();
+                        content.put("value", "您申请的倒休已通过");
+                        content.put("color", "#173177");
+                        data.put("remark", content);
 
-                    jsonObject.put("data", data);
+                        jsonObject.put("data", data);
 
-                    list.add(jsonObject);
+                        list.add(jsonObject);
+                    }
+                } else {
+                    updateRestDown(bean);
+                    employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(restDown.getApprover()));
+                    if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
+                    EmployeeBean auditor = employeeBeans.get(0);
+                    if (StringUtils.isNotBlank(auditor.getOpenId())) {
+                        //审查人消息
+                        jsonObject = new JSONObject();
+                        jsonObject.put("touser", auditor.getOpenId());
+                        jsonObject.put("url", examineRestDownUrl.concat("?rdId=").concat(restDown.getRdId()));
+                        jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
+                        data = new JSONObject();
+
+                        JSONObject content = new JSONObject();
+                        content.put("value", "有新的倒休申请需要审核!");
+                        content.put("color", "#173177");
+                        data.put("first", content);
+
+                        //申请人
+                        content = new JSONObject();
+                        content.put("value", restDown.getEmpName());
+                        content.put("color", "#173177");
+                        data.put("keyword1", content);
+
+                        //请假类型
+                        content = new JSONObject();
+                        content.put("value", restDown.getReaName());
+                        content.put("color", "#173177");
+                        data.put("keyword2", content);
+
+                        //请假时间
+                        content = new JSONObject();
+                        content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(restDown.getCreateDate())));
+                        content.put("color", "#173177");
+                        data.put("keyword3", content);
+
+                        //备注
+                        content = new JSONObject();
+                        content.put("value", "有新的倒休申请需要审核,点击查看详情!");
+                        content.put("color", "#173177");
+                        data.put("remark", content);
+
+                        jsonObject.put("data", data);
+
+                        list.add(jsonObject);
+                    }
                 }
             }
         } else if (StringUtils.isNotBlank(restDownBean.getApproverAdv())) {
             //批准人审核
             if (!"0".equals(restDown.getApproverAdv())) throw new MessageException("该申请已完成审核,不可重复审核!");
             if (!"1".equals(restDown.getAuditorAdv())) throw new MessageException("审核人未同意前不可审核!");
-            if (StringUtils.isBlank(restDown.getApprover()))throw new MessageException("该申请只有2个审核人不可审核!");
+            if (StringUtils.isBlank(restDown.getApprover())) throw new MessageException("该申请只有2个审核人不可审核!");
             if (!restDown.getApprover().equals(restDownBean.getApprover())) throw new MessageException("不可代替他人审核!");
 
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());

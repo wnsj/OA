@@ -8,6 +8,8 @@ import lombok.experimental.Accessors;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
+import java.util.List;
+
 /* *
  * @desc:报销Bean
  * @author: dx
@@ -86,6 +88,10 @@ public class ReimbursementAccountBean implements Serializable {
 
   private String advState;
 
-  //private MultipartFile[] file;
+  //凭证
+  private List<ReimbursementCertificateBean> reimbursementCertificateBeans;
+
+  //是否需要凭证
+  private String needCertificate;
 
 }

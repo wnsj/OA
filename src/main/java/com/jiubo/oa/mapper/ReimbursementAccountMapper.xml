@@ -74,36 +74,6 @@
         <if test="createEndDate != null and createEndDate != ''">
             AND RA.CREATE_DATE &lt; #{createEndDate}
         </if>
-        <if test="advState != null and advState != ''">
-            <choose>
-                <when test="advState == 1">
-                    AND RA.STATE != 1
-                    AND RA.APPROVER_ADV != 1
-                    AND RA.EXAMINER_ADV != 2
-                    AND RA.AUDITOR_ADV != 2
-                    AND RA.APPROVER_ADV != 2
-                    AND (
-                    RA.EXAMINER_ADV = 0 OR RA.EXAMINER_ADV = 1
-                    OR RA.AUDITOR_ADV = 0 OR RA.AUDITOR_ADV = 1
-                    )
-                </when>
-                <when test="advState == 2">
-                    AND RA.STATE != 1
-                    AND RA.APPROVER_ADV = 1
-                </when>
-                <when test="advState == 3">
-                    AND RA.STATE != 1
-                    AND (
-                    RA.EXAMINER_ADV = 2
-                    OR RA.AUDITOR_ADV = 2
-                    OR RA.APPROVER_ADV = 2
-                    )
-                </when>
-                <when test="advState == 4">
-                    AND RA.STATE = 1
-                </when>
-            </choose>
-        </if>
         ORDER BY RA.RA_ID
     </select>
 
