@@ -282,11 +282,13 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
                 updateReimbursementAccount(reimbursementAccountBean);
                 //先删除文件，再保存文件
                 if (file != null) {
-                    List<ReimbursementCertificateBean> reimbursementCertificateBeans = certificateService.queryReimbursementCertificate(new ReimbursementCertificateBean().setRaId(reimbursementAccountBean.getRaId()));
-                    for (ReimbursementCertificateBean certificateBean : reimbursementCertificateBeans) {
-                        certificateService.deleteReimbursementCertificate(certificateBean);
+                    if(file.length > 0) {
+                        List<ReimbursementCertificateBean> reimbursementCertificateBeans = certificateService.queryReimbursementCertificate(new ReimbursementCertificateBean().setRaId(reimbursementAccountBean.getRaId()));
+                        for (ReimbursementCertificateBean certificateBean : reimbursementCertificateBeans) {
+                            certificateService.deleteReimbursementCertificate(certificateBean);
+                        }
+                        saveFile(reimbursementAccountBean, file);
                     }
-                    saveFile(reimbursementAccountBean, file);
                 }
                 applyReimbursementAccountMsg(reimbursementAccountBean, list, false);
             }
@@ -467,7 +469,6 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
             String nowStr = TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.getDBTime());
             if ("2".equals(reimbursementAccountBean.getApproverAdv())) {
                 //不同意，发消息给申请人
-
                 updateReimbursementAccount(new ReimbursementAccountBean().setRaId(reimbursementAccount.getRaId()).setApproverAdv("2").setApproverRemark(reimbursementAccountBean.getApproverRemark()).setApproverDate(nowStr).setState("4"));
                 operationReimbursementEmpMsg(reimbursementAccount, list);
             } else {

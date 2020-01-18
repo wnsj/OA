@@ -433,7 +433,7 @@
         AND (RA.STATE = 0 OR RA.STATE = 2)
         AND RA.EXAMINER = #{empId}
         <if test="raId != null and raId != ''">
-            AND RA.RA_ID = #{raId}
+            AND RA.RA_ID != #{raId}
         </if>
 
         UNION
@@ -447,7 +447,7 @@
         AND RA.AUDITOR_ADV = 0
         AND (RA.STATE = 0 OR RA.STATE = 2)
         <if test="raId != null and raId != ''">
-            AND RA.RA_ID = #{raId}
+            AND RA.RA_ID != #{raId}
         </if>
 
         UNION
@@ -462,7 +462,7 @@
         AND RA.APPROVER_ADV = 0
         AND (RA.STATE = 0 OR RA.STATE = 2)
         <if test="raId != null and raId != ''">
-            AND RA.RA_ID = #{raId}
+            AND RA.RA_ID != #{raId}
         </if>
 
         UNION
@@ -475,7 +475,7 @@
         WHERE INFS.SEND_AGREE = 0 AND (INFS.STATE = 0 OR INFS.STATE = 2)
         AND INFS.EMP_SEND_ID = #{empId}
         <if test="infId != null and infId != ''">
-            AND INFS.INF_ID = #{infId}
+            AND INFS.INF_ID != #{infId}
         </if>
 
         UNION
@@ -488,7 +488,7 @@
         WHERE INFS.SEND_AGREE = 1 AND (INFS.STATE = 0 OR INFS.STATE = 2)
         AND INFS.EMP_REC_ID = #{empId}
         <if test="infId != null and infId != ''">
-            AND INFS.INF_ID = #{infId}
+            AND INFS.INF_ID != #{infId}
         </if>
     </select>
 </mapper>
