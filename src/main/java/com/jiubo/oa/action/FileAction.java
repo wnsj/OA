@@ -2,6 +2,7 @@ package com.jiubo.oa.action;
 
 import com.jiubo.oa.exception.MessageException;
 import com.jiubo.oa.service.FileService;
+import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,20 +35,24 @@ public class FileAction {
         String type = request.getParameter("type");
         if (StringUtils.isBlank(type)) throw new MessageException("文件类型不能为空!");
         if ("IMG".equalsIgnoreCase(type)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("rcId", request.getParameter("rcId"));
-            ServletOutputStream outputStream = response.getOutputStream();
-            File file = fileService.getCertificateImg(map);
-            response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            byte[] bytes = new byte[1024];
-            int len = 0;
-            while ((len = bis.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, len);
+            try {
+                Map<String, Object> map = new HashMap<>();
+                map.put("rcId", request.getParameter("rcId"));
+                ServletOutputStream outputStream = response.getOutputStream();
+                File file = fileService.getCertificateImg(map);
+                response.addHeader("Content-Disposition", "attachment; filename=" + file.getName());
+                FileInputStream fis = new FileInputStream(file);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+                byte[] bytes = new byte[1024];
+                int len = 0;
+                while ((len = bis.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, len);
+                }
+                if (bis != null) bis.close();
+                if (fis != null) fis.close();
+            } catch (ClientAbortException clientAbortException) {
+                //System.out.println("客户端拒绝了或浏览器关闭了。。。该异常不做处理。。。");
             }
-            if (bis != null) bis.close();
-            if (fis != null) fis.close();
         }
     }
 }

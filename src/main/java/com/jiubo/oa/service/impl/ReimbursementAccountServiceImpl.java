@@ -12,6 +12,7 @@ import com.jiubo.oa.service.ReimbursementAccountService;
 import com.jiubo.oa.service.ReimbursementCertificateService;
 import com.jiubo.oa.service.WxSendMessageService;
 import com.jiubo.oa.util.TimeUtil;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -130,21 +131,26 @@ public class ReimbursementAccountServiceImpl extends ServiceImpl<ReimbursementAc
                 //读写文件
                 if (!multipartFile.isEmpty()) {
                     InputStream is = multipartFile.getInputStream();
-                    int len = 0;
-                    byte[] by = new byte[1024];
-                    OutputStream os = new FileOutputStream(path);
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    BufferedOutputStream bos = new BufferedOutputStream(os);
-                    while ((len = bis.read(by)) != -1) {
-                        bos.write(by, 0, len);
-                        bos.flush();
+                    if(multipartFile.getSize() / 1024 / 1024 > 2){
+                        //压缩图片
+                        Thumbnails.of(is).scale(1f).outputQuality(0.25f).toFile(path);
+                    }else{
+                        int len = 0;
+                        byte[] by = new byte[1024];
+                        OutputStream os = new FileOutputStream(path);
+                        BufferedInputStream bis = new BufferedInputStream(is);
+                        BufferedOutputStream bos = new BufferedOutputStream(os);
+                        while ((len = bis.read(by)) != -1) {
+                            bos.write(by, 0, len);
+                            bos.flush();
+                        }
+                        if (bos != null)
+                            bos.close();
+                        if (bis != null)
+                            bis.close();
+                        if (os != null)
+                            os.close();
                     }
-                    if (bos != null)
-                        bos.close();
-                    if (bis != null)
-                        bis.close();
-                    if (os != null)
-                        os.close();
                     if (is != null)
                         is.close();
                 }

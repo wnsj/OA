@@ -99,6 +99,12 @@
             <artifactId>mockwebserver</artifactId>
             <version>4.3.1</version>
         </dependency>
+        <!-- 图片缩略图 -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.8</version>
+        </dependency>
     </dependencies>
 
     <build>
