@@ -68,9 +68,9 @@
     <!--    添加信息单  -->
     <insert id="addInformationSheet" useGeneratedKeys="true" keyProperty="infId">
         INSERT INTO INFORMATION_SHEET (SHEET_TYPE,DEGREE_TYPE,SENDER_ID,EMP_SEND_ID,DEPT_SEND_ID,SEND_DATE,DEPT_REC_ID,EMP_REC_ID,EMP_ID
-                      ,THEME,CONTENT,REQUIRE_CONTENT,STATE)
+                      ,THEME,CONTENT,REQUIRE_CONTENT,STATE,SEND_AGREE,REC_AGREE)
         VALUES (#{sheetType}, #{degreeType}, #{senderId}, #{empSendId},#{deptSendId},#{sendDate}, #{deptRecId}, #{empRecId}, #{empId},
-                #{theme}, #{content}, #{requireContent}, #{state})
+                #{theme}, #{content}, #{requireContent}, #{state},#{sendAgree},#{recAgree})
     </insert>
 
     <!--    修改信息单-->

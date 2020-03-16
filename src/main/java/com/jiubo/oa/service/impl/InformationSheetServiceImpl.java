@@ -274,19 +274,19 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
             if ("2".equals(informationSheetBean.getSendAgree())) {
                 //不同意，发消息给申请人
                 updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("2").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr).setState("4"));
-                operationInformationSheetEmpMsg(informationSheetBean, list);
+                operationInformationSheetEmpMsg(informationSheetBean1, list);
             } else {
                 //发起部门负责人同意，通知接收部门负责人
                 updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setSendAgree("1").setSendContent(informationSheetBean.getSendContent()).setSendAppDate(nowStr).setState("2"));
 
-                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean.getEmpRecId()));
+                employeeBeans = employeeService.queryEmployee(new EmployeeBean().setEmpId(informationSheetBean1.getEmpRecId()));
                 if (employeeBeans.isEmpty()) throw new MessageException("审核人工号错误!");
                 EmployeeBean auditor = employeeBeans.get(0);
                 if (StringUtils.isNotBlank(auditor.getOpenId())) {
                     //审核人消息
                     jsonObject = new JSONObject();
                     jsonObject.put("touser", auditor.getOpenId());
-                    jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
+                    jsonObject.put("url", examineInformationSheetUrl.concat("?infId=").concat(informationSheetBean1.getInfId()));
                     jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
                     data = new JSONObject();
 
@@ -297,19 +297,19 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
 
                     //申请人
                     content = new JSONObject();
-                    content.put("value", informationSheetBean.getSenderName());
+                    content.put("value", informationSheetBean1.getSenderName());
                     content.put("color", "#173177");
                     data.put("keyword1", content);
 
                     //请假类型
                     content = new JSONObject();
-                    content.put("value", informationSheetBean.getTheme());
+                    content.put("value", informationSheetBean1.getTheme());
                     content.put("color", "#173177");
                     data.put("keyword2", content);
 
                     //请假时间
                     content = new JSONObject();
-                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean.getSendDate())));
+                    content.put("value", TimeUtil.getDateYYYY_MM_DD_HH_MM_SS(TimeUtil.parseAnyDate(informationSheetBean1.getSendDate())));
                     content.put("color", "#173177");
                     data.put("keyword3", content);
 
@@ -334,7 +334,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
             if ("2".equals(informationSheetBean.getRecAgree())) {
                 //不同意，发消息给申请人
                 updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("2").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr).setState("4"));
-                operationInformationSheetEmpMsg(informationSheetBean, list);
+                operationInformationSheetEmpMsg(informationSheetBean1, list);
             } else {
                 //同意，通知接收部门负责人审核
                 updateInformationSheet(new InformationSheetBean().setInfId(informationSheetBean.getInfId()).setRecAgree("1").setRecContent(informationSheetBean.getRecContent()).setRecAppDate(nowStr).setState("3"));
@@ -345,7 +345,7 @@ public class InformationSheetServiceImpl extends ServiceImpl<InformationSheetDao
                     //审核人消息
                     jsonObject = new JSONObject();
                     jsonObject.put("touser", auditor.getOpenId());
-                    jsonObject.put("url", modifyInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
+                    jsonObject.put("url", examineInformationSheetUrl.concat("?infId=").concat(informationSheetBean.getInfId()));
                     jsonObject.put("template_id", "-ji2ofkXT1lxWlWwcvUvcXUBeOsGVG9rGrbfmPC36lU");
                     data = new JSONObject();
 
